@@ -1,22 +1,31 @@
 #include "orderbook/OrderBook.hpp"
 
 ResultCodes OrderBook::add_order(OrderId id, Side side, Price price, Quantity quantity) {
-    Quantity remaining = match(side, price, quantity);
+    Quantity filled = match(side, price, quantity);
+    Quantity remaining = quantity - filled;
+    
+    if (remaining) {
+        //partial fill
+        Order* order = create_order(id ,side, price, remaining);
+        auto& level = get_or_create_level(side, price);
+        auto it = level.insert(order);
+        order->it = it;
 
-    Order* order = create_order(id ,side, price, quantity);
-    auto& level = get_or_create_level(side, price);
-    auto it = level.insert(order);
-    order->it = it;
+        return ResultCodes::Add_PartialFill;
+    } else {
+        // fully filled
+        return ResultCodes::Add_Success;
+    }
 }
 
 ResultCodes OrderBook::cancel(OrderId id) {
     auto it = order_lookup_.find(id);
     if (it != order_lookup_.end()) {
-        Order* order = (*it).second;
+        Order* order = it->second;
         remove_order(order);
         order_lookup_.erase(id);
 
-        return ResultCodes::Cancel_Fail;
+        return ResultCodes::Cancel_Success;
     } else {
         return ResultCodes::Cancel_Fail;
     }
@@ -57,4 +66,44 @@ void OrderBook::remove_order(Order* order) {
 }
 
 Quantity OrderBook::match(Side side, Price price, Quantity quantity) {
+    Quantity filled = 0;
+
+    if (side == Side::Buy) {
+
+        if (price < best_ask()) { // no match, early return
+            return 0;
+        }
+
+        auto it = asks_.begin();
+        while (it != asks_.end() && quantity > 0 && it->first <= price) {
+            auto& level = it->second;
+
+            Quantity level_filled = level.match(quantity);
+            filled += level_filled;
+            quantity -= level_filled;
+
+            if (level.empty()) { it = asks_.erase(it); }
+            else { ++it; }
+        }
+
+        return filled;
+    } else { // Side::Sell
+        if (price > best_bid()) {
+            return 0;
+        }
+
+        auto it = bids_.begin();
+        while (it != bids_.end() && quantity > 0 && it->first >= price) {
+            auto& level = it->second;
+
+            Quantity level_filled = level.match(quantity);
+            filled += level_filled;
+            quantity -= level_filled;
+
+            if (level.empty()) { it = bids_.erase(it); }
+            else { ++it; }
+        }
+
+        return filled;
+    }
 }

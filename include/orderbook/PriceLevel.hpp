@@ -20,6 +20,29 @@ struct PriceLevel {
         Quantity get_quantity() const {
             return quantity; 
         }
+
+        Quantity match(Quantity incoming) {
+            Quantity total = 0;
+
+            while (!level.empty() && incoming > 0) {
+                Order* order = level.front();
+
+                Quantity filled = std::min(incoming, order->quantity);
+                order->quantity -= filled;
+                total += filled;
+                incoming -= filled;
+                
+                if (order->quantity == 0) {
+                    level.pop_front();
+                }
+            }
+
+            quantity -= total;
+
+            return total;
+        }
+
+        bool empty() { return level.empty (); }
     
     private:
         std::list<Order*> level{};
