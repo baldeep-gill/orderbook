@@ -1,20 +1,24 @@
 #include "orderbook/OrderBook.hpp"
 
-void OrderBook::add_order(OrderId id, Side side, Price price, Quantity quantity) {
+ResultCodes OrderBook::add_order(OrderId id, Side side, Price price, Quantity quantity) {
+    Quantity remaining = match(side, price, quantity);
+
     Order* order = create_order(id ,side, price, quantity);
     auto& level = get_or_create_level(side, price);
     auto it = level.insert(order);
     order->it = it;
-
-    match(side, quantity);
 }
 
-void OrderBook::cancel(OrderId id) {
+ResultCodes OrderBook::cancel(OrderId id) {
     auto it = order_lookup_.find(id);
     if (it != order_lookup_.end()) {
         Order* order = (*it).second;
         remove_order(order);
         order_lookup_.erase(id);
+
+        return ResultCodes::Cancel_Fail;
+    } else {
+        return ResultCodes::Cancel_Fail;
     }
 }
 
@@ -52,5 +56,5 @@ void OrderBook::remove_order(Order* order) {
     level.erase(order->it);
 }
 
-void OrderBook::match(Side side, Quantity quantity) {
+Quantity OrderBook::match(Side side, Price price, Quantity quantity) {
 }

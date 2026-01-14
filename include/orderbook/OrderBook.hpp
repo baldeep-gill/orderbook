@@ -7,11 +7,12 @@
 
 #include "Order.hpp"
 #include "PriceLevel.hpp"
+#include "ResultCodes.hpp"
 
 class OrderBook {
 public:
-    void add_order(OrderId id, Side side, Price price, Quantity quantity);
-    void cancel(OrderId id);
+    ResultCodes add_order(OrderId id, Side side, Price price, Quantity quantity);
+    ResultCodes cancel(OrderId id);
     
     Price best_bid() const; // optional?
     Price best_ask() const;
@@ -27,5 +28,5 @@ private:
     Order* create_order(OrderId id, Side side, Price price, Quantity quantity);
     PriceLevel& get_or_create_level(Side side, Price price);
     void remove_order(Order* order);
-    void match(Side side, Quantity quantity);
+    Quantity match(Side side, Price price, Quantity quantity);
 };
