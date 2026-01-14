@@ -7,12 +7,12 @@
 
 #include "Order.hpp"
 #include "PriceLevel.hpp"
-#include "ResultCodes.hpp"
+#include "ResultCode.hpp"
 
 class OrderBook {
 public:
-    ResultCodes add_order(OrderId id, Side side, Price price, Quantity quantity);
-    ResultCodes cancel(OrderId id);
+    ResultCode add_order(OrderId id, Side side, Price price, Quantity quantity);
+    ResultCode cancel(OrderId id);
     
     Price best_bid() const; // optional?
     Price best_ask() const;

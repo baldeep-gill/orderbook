@@ -1,9 +1,9 @@
 #include "orderbook/OrderBook.hpp"
 
-ResultCodes OrderBook::add_order(OrderId id, Side side, Price price, Quantity quantity) {
+ResultCode OrderBook::add_order(OrderId id, Side side, Price price, Quantity quantity) {
     Quantity filled = match(side, price, quantity);
     Quantity remaining = quantity - filled;
-    
+
     if (remaining) {
         //partial fill
         Order* order = create_order(id ,side, price, remaining);
@@ -11,23 +11,23 @@ ResultCodes OrderBook::add_order(OrderId id, Side side, Price price, Quantity qu
         auto it = level.insert(order);
         order->it = it;
 
-        return ResultCodes::Add_PartialFill;
+        return ResultCode::Add_PartialFill;
     } else {
         // fully filled
-        return ResultCodes::Add_Success;
+        return ResultCode::Add_Success;
     }
 }
 
-ResultCodes OrderBook::cancel(OrderId id) {
+ResultCode OrderBook::cancel(OrderId id) {
     auto it = order_lookup_.find(id);
     if (it != order_lookup_.end()) {
         Order* order = it->second;
         remove_order(order);
         order_lookup_.erase(id);
 
-        return ResultCodes::Cancel_Success;
+        return ResultCode::Cancel_Success;
     } else {
-        return ResultCodes::Cancel_Fail;
+        return ResultCode::Cancel_Fail;
     }
 }
 

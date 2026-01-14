@@ -1,6 +1,6 @@
 #pragma once
 
-enum class ResultCodes {
+enum class ResultCode {
     Add_Success,
     Add_Fail,
     Add_PartialFill,
