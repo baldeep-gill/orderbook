@@ -30,4 +30,5 @@ private:
     PriceLevel& get_or_create_level(Side side, Price price);
     void remove_order(Order* order);
     Quantity match(Side side, Price price, Quantity quantity);
+    uint64_t get_timestamp();
 };

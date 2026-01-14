@@ -1,3 +1,5 @@
+#include <chrono>
+
 #include "orderbook/OrderBook.hpp"
 
 ResultCode OrderBook::add_order(OrderId id, Side side, Price price, Quantity quantity) {
@@ -86,7 +88,7 @@ Order* OrderBook::create_order(OrderId id, Side side, Price price, Quantity quan
     order->price = price;
     order->total_quantity = quantity;
     order->filled_quantity = 0;
-    order->timestamp = 0; // TODO 
+    order->timestamp = get_timestamp();
 
     orders_.push_back(ptr);
     order_lookup_[id] = order;
@@ -145,4 +147,8 @@ Quantity OrderBook::match(Side side, Price price, Quantity quantity) {
 
         return filled;
     }
+}
+
+uint64_t OrderBook::get_timestamp() {
+    return std::chrono::steady_clock::now().time_since_epoch().count();
 }
