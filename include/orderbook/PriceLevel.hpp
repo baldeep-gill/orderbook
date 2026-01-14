@@ -8,12 +8,12 @@ struct PriceLevel {
 
         Iterator insert(Order* order) {
             level.push_back(order);
-            quantity += order->quantity;
+            quantity += order->open_quantity();
             return std::prev(level.end());
         }
 
         void erase(Iterator it) {
-            quantity -= (*it)->quantity;
+            quantity -= (*it)->open_quantity();
             level.erase(it);
         }
         
@@ -27,12 +27,14 @@ struct PriceLevel {
             while (!level.empty() && incoming > 0) {
                 Order* order = level.front();
 
-                Quantity filled = std::min(incoming, order->quantity);
-                order->quantity -= filled;
+                Quantity filled = std::min(incoming, order->open_quantity());
+
+                order->filled_quantity += filled;
+
                 total += filled;
                 incoming -= filled;
                 
-                if (order->quantity == 0) {
+                if (order->open_quantity() == 0) {
                     level.pop_front();
                 }
             }

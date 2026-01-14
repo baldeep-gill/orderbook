@@ -46,8 +46,9 @@ Order* OrderBook::create_order(OrderId id, Side side, Price price, Quantity quan
     order->id = id;
     order->side = side;
     order->price = price;
-    order->quantity = quantity;
-    order->timestamp = 0;
+    order->total_quantity = quantity;
+    order->filled_quantity = 0;
+    order->timestamp = 0; // TODO 
 
     orders_.push_back(ptr);
     order_lookup_[id] = order;

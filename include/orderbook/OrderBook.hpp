@@ -13,7 +13,8 @@ class OrderBook {
 public:
     ResultCode add_order(OrderId id, Side side, Price price, Quantity quantity);
     ResultCode cancel(OrderId id);
-    
+    ResultCode market_order(Side side, Quantity quantity);
+
     Price best_bid() const; // optional?
     Price best_ask() const;
 

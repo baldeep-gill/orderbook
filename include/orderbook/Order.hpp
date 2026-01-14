@@ -14,9 +14,10 @@ enum class OrderType { Limit, Market };
 struct Order {
     OrderId id;
     Side side;
-    OrderType type;
     Price price;
-    Quantity quantity;
+    Quantity total_quantity;
+    Quantity filled_quantity{0};
+    Quantity open_quantity() { return total_quantity - filled_quantity; }
 
     std::uint64_t timestamp;
 

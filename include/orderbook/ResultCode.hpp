@@ -6,4 +6,6 @@ enum class ResultCode {
     Add_PartialFill,
     Cancel_Success,
     Cancel_Fail,
+    Modify_Success,
+    Modify_Fail,
 };
