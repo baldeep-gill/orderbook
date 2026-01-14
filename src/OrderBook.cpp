@@ -31,6 +31,44 @@ ResultCode OrderBook::cancel(OrderId id) {
     }
 }
 
+ResultCode OrderBook::market_order(Side side, Quantity quantity) {
+    Quantity filled = 0;
+
+    if (side == Side::Buy) {
+
+        auto it = asks_.begin();
+        while (it != asks_.end() && quantity > 0) {
+            auto& level = it->second;
+
+            Quantity level_filled = level.match(quantity);
+            filled += level_filled;
+            quantity -= level_filled;
+
+            if (level.empty()) { it = asks_.erase(it); }
+            else { ++it; }
+        }
+
+    } else { // Side::Sell
+
+        auto it = bids_.begin();
+        while (it != bids_.end() && quantity > 0) {
+            auto& level = it->second;
+
+            Quantity level_filled = level.match(quantity);
+            filled += level_filled;
+            quantity -= level_filled;
+
+            if (level.empty()) { it = bids_.erase(it); }
+            else { ++it; }
+        }
+    }
+
+    Quantity remaining = quantity - filled;
+
+    return filled > 0 ? (remaining > 0 ? ResultCode::Add_PartialFill : ResultCode::Add_Success) 
+                      : ResultCode::Add_Fail;
+}
+
 Price OrderBook::best_bid() const {
     return (*bids_.begin()).first;
 }
