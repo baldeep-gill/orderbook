@@ -106,7 +106,7 @@ void OrderBook::remove_order(Order* order) {
     level.erase(order->it);
 
     if (level.empty()) {
-        if (order->side == Side::Buy ? bids_.erase(order->price) : asks_.erase(order->price));
+        (order->side == Side::Buy) ? bids_.erase(order->price) : asks_.erase(order->price);
     }
 }
 
