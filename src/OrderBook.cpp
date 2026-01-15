@@ -72,11 +72,11 @@ ResultCode OrderBook::market_order(Side side, Quantity quantity) {
 }
 
 Price OrderBook::best_bid() const {
-    return (*bids_.begin()).first;
+    return bids_.begin()->first;
 }
 
 Price OrderBook::best_ask() const {
-    return (*asks_.begin()).first;
+    return asks_.begin()->first;
 }
 
 Order* OrderBook::create_order(OrderId id, Side side, Price price, Quantity quantity) {
@@ -90,7 +90,7 @@ Order* OrderBook::create_order(OrderId id, Side side, Price price, Quantity quan
     order->filled_quantity = 0;
     order->timestamp = get_timestamp();
 
-    orders_.push_back(ptr);
+    orders_.push_back(std::move(ptr));
     order_lookup_[id] = order;
 
     return order;
@@ -104,6 +104,10 @@ PriceLevel& OrderBook::get_or_create_level(Side side, Price price) {
 void OrderBook::remove_order(Order* order) {
     auto& level = get_or_create_level(order->side, order->price);
     level.erase(order->it);
+
+    if (level.empty()) {
+        if (order->side == Side::Buy ? bids_.erase(order->price) : asks_.erase(order->price));
+    }
 }
 
 Quantity OrderBook::match(Side side, Price price, Quantity quantity) {

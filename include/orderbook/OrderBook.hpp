@@ -11,6 +11,14 @@
 
 class OrderBook {
 public:
+    OrderBook() : bids_{}, asks_{}, orders_{}, order_lookup_{} {};
+
+    OrderBook(OrderBook& other) = delete;
+    void operator=(OrderBook& other) = delete;
+
+    OrderBook(OrderBook&& other) = delete;
+    void operator=(OrderBook&& other) = delete;
+
     ResultCode add_order(OrderId id, Side side, Price price, Quantity quantity);
     ResultCode cancel(OrderId id);
     ResultCode market_order(Side side, Quantity quantity);
