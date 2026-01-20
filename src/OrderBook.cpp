@@ -7,17 +7,16 @@ ResultCode OrderBook::add_order(OrderId id, Side side, Price price, Quantity qua
     Quantity remaining = quantity - filled;
 
     if (remaining) {
-        //partial fill
         Order* order = create_order(id ,side, price, remaining);
         auto& level = get_or_create_level(side, price);
         auto it = level.insert(order);
         order->it = it;
 
+        if (remaining == quantity) return ResultCode::Add_Success;
         return ResultCode::Add_PartialFill;
-    } else {
-        // fully filled
-        return ResultCode::Add_Success;
     }
+
+    return ResultCode::Add_Fail;
 }
 
 ResultCode OrderBook::cancel(OrderId id) {
