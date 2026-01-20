@@ -47,9 +47,18 @@ void calculate_add_throughput() {
     std::cout << "Throughput: " << tp << " orders/sec (" << time << "s total)\n\n"; 
 }
 
+void add_loop() {
+    OrderBook book{};
+    for (size_t i = 0; i < N; ++i) {
+        book.add_order(i, Side::Buy, 100.0, 1);
+    }
+}
+
 int main() {
-    calculate_add_percentiles();
-    calculate_add_throughput();
+    // calculate_add_percentiles();
+    // calculate_add_throughput();
+
+    add_loop();
 
     return 0;
 }
