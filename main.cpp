@@ -3,9 +3,10 @@
 
 #include "orderbook/OrderBook.hpp"
 
-int main() {
+constexpr std::size_t N = 1'000'000;
+
+void calculate_add_percentiles() {
     OrderBook book{};
-    constexpr std::size_t N = 1'000'000;
 
     std::vector<long long> duration;
     duration.reserve(N);
@@ -28,7 +29,27 @@ int main() {
 
     std::cout << "P50: " << p50 << "ns\n";
     std::cout << "P95: " << p95 << "ns\n";
-    std::cout << "P99: " << p99 << "ns\n";
+    std::cout << "P99: " << p99 << "ns\n\n";
+}
+
+void calculate_add_throughput() {
+    OrderBook book{};
+
+    auto start = std::chrono::steady_clock::now();
+    for (size_t i = 0; i < N; ++i) {
+        book.add_order(i, Side::Buy, 100.0, 1);
+    }
+
+    auto end = std::chrono::steady_clock::now();
+    auto time = std::chrono::duration<double>(end - start).count();
+    long double tp = static_cast<long double>(N) / time;
+
+    std::cout << "Throughput: " << tp << " orders/sec (" << time << "s total)\n\n"; 
+}
+
+int main() {
+    calculate_add_percentiles();
+    calculate_add_throughput();
 
     return 0;
 }
