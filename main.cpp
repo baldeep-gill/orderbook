@@ -1,15 +1,34 @@
+#include <chrono>
 #include <iostream>
 
 #include "orderbook/OrderBook.hpp"
 
 int main() {
     OrderBook book{};
+    constexpr std::size_t N = 1'000'000;
 
-    book.add_order(0, Side::Buy, 100.0, 100);
-    std::cout << book.best_bid() << "\n";
+    std::vector<long long> duration;
+    duration.reserve(N);
 
-    auto rc = book.add_order(0 , Side::Buy, 120.0, 10);
-    std::cout << static_cast<int>(rc) << "\n" << book.best_bid() << "\n";
+    for (size_t i = 0; i < N; ++i) {
+        auto start = std::chrono::steady_clock::now();
+
+        book.add_order(i, Side::Buy, 100.0, 1);
+
+        auto end = std::chrono::steady_clock::now();
+        auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+        duration.push_back(time);
+    }
+
+    std::sort(duration.begin(), duration.end());
+
+    auto p50 = duration[N * 0.50];
+    auto p95 = duration[N * 0.95];
+    auto p99 = duration[N * 0.99];
+
+    std::cout << "P50: " << p50 << "ns\n";
+    std::cout << "P95: " << p95 << "ns\n";
+    std::cout << "P99: " << p99 << "ns\n";
 
     return 0;
 }
