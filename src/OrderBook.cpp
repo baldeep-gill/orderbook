@@ -3,6 +3,10 @@
 #include "orderbook/OrderBook.hpp"
 
 ResultCode OrderBook::add_order(OrderId id, Side side, Price price, Quantity quantity) {
+    if (order_lookup_.contains(id)) return ResultCode::Add_Fail;
+
+    if (quantity <= 0) return ResultCode::Add_Fail;
+
     Quantity filled = match(side, price, quantity);
     Quantity remaining = quantity - filled;
 
@@ -13,7 +17,7 @@ ResultCode OrderBook::add_order(OrderId id, Side side, Price price, Quantity qua
         order->it = it;
 
         if (remaining == quantity) return ResultCode::Add_Success;
-        return ResultCode::Add_PartialFill;
+        else return ResultCode::Add_PartialFill;
     }
 
     return ResultCode::Add_Fail;

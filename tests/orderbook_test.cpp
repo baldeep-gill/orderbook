@@ -58,7 +58,7 @@ TEST(OrderBookTest, TestBidPricePriority) {
 
     book.add_order(1, Side::Buy, 100, 10);
     book.add_order(2, Side::Buy, 101, 10);
-    book.add_order(1, Side::Buy, 99, 10);
+    book.add_order(3, Side::Buy, 99, 10);
     
     EXPECT_EQ(book.best_bid(), 101);
 }
@@ -68,7 +68,7 @@ TEST(OrderBookTest, TestAskPricePriority) {
 
     book.add_order(1, Side::Sell, 100, 10);
     book.add_order(2, Side::Sell, 101, 10);
-    book.add_order(1, Side::Sell, 99, 10);
+    book.add_order(3, Side::Sell, 99, 10);
     
     EXPECT_EQ(book.best_ask(), 99);
 }
