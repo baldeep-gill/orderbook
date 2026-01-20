@@ -8,7 +8,7 @@ FetchContent_MakeAvailable(googletest)
 
 add_executable(
     orderbook_tests
-    orderbook_test.cpp
+    test_orderbook.cpp
 )
 
 target_link_libraries(orderbook_tests
