@@ -92,3 +92,42 @@ TEST(OrderBookTest, CancelUnknownOrderIdFails) {
     auto rc = book.cancel(999);  // non-existent
     EXPECT_EQ(rc, ResultCode::Cancel_Fail);  // assert some error code
 }
+
+TEST(OrderBookTest, TestMarketBuyPriceTimePriority) {
+    OrderBook book;
+
+    book.add_order(1, Side::Sell, 100, 5);
+    book.add_order(2, Side::Sell, 101, 5);
+
+    auto rc = book.market_order(Side::Buy, 7);
+    ASSERT_EQ(rc, ResultCode::Add_Success);
+
+    EXPECT_EQ(book.best_ask(), 101);
+    EXPECT_EQ(book.best_bid(), 0);
+}
+
+TEST(OrderBookTest, TestMarketOrderNoFill) {
+    OrderBook book;
+
+    auto rc = book.market_order(Side::Sell, 1);
+    EXPECT_EQ(rc, ResultCode::Add_Fail);
+}
+
+TEST(OrderBookTest, DuplicateOrderIdRejection) {
+    OrderBook book;
+
+    EXPECT_EQ(book.add_order(1, Side::Buy, 100, 10), ResultCode::Add_Success);
+    EXPECT_EQ(book.add_order(1, Side::Sell, 222, 2), ResultCode::Add_Fail);
+}
+
+TEST(OrderBookTest, ZeroQuantityRejected) {
+    OrderBook book;
+
+    EXPECT_EQ(book.add_order(1, Side::Buy, 100, 0), ResultCode::Add_Fail);
+}
+
+TEST(OrderBookTest, NegativeQuantityRejected) {
+    OrderBook book;
+
+    EXPECT_EQ(book.add_order(1, Side::Buy, 100, -5), ResultCode::Add_Fail);
+}
