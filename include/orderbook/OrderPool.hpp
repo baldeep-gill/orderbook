@@ -7,10 +7,15 @@
 
 class OrderPool {
     private:
+        static constexpr size_t CAPACITY = 250'000;
         std::vector<std::unique_ptr<Order>> pointers_;
         std::vector<Order*> free_orders_;
 
     public:
+        OrderPool() : pointers_{}, free_orders_{} {
+            pointers_.reserve(CAPACITY);
+        }
+
         Order* allocate() {
             if (!free_orders_.empty()) {
                 Order* order = free_orders_.back();
@@ -20,9 +25,11 @@ class OrderPool {
             }
 
             std::unique_ptr<Order> ptr = std::make_unique<Order>();
-            pointers_.push_back(ptr);
+            
+            Order* order = ptr.get();
+            pointers_.push_back(std::move(ptr));
 
-            return ptr.get();
+            return order;
         }
 
         void free(Order* order) {
