@@ -1,5 +1,9 @@
 #include <chrono>
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <filesystem>
 
 #include "orderbook/OrderBook.hpp"
 
@@ -54,11 +58,49 @@ void add_loop() {
     }
 }
 
+void parse_binance() {
+    OrderBook book{};
+
+    uint64_t ids = 0;
+    size_t count = 0;
+
+    std::ifstream stream{"data/market_data.csv"};
+
+    std::string line;
+    std::getline(stream, line);
+
+    auto start = std::chrono::steady_clock::now();
+    while (std::getline(stream, line)) {
+        std::istringstream ss{line};
+        Order order;
+        
+        std::string ts_str, type_s, side_s, price_s, qty_s;
+
+        std::getline(ss, ts_str, ',');
+        std::getline(ss, type_s, ',');
+        std::getline(ss, side_s, ',');
+        std::getline(ss, price_s, ',');
+        std::getline(ss, qty_s, ',');
+        
+        Side side = (side_s == "B") ? Side::Buy : Side::Sell;
+
+        book.add_order(ids++, side, std::stoull(price_s), std::stoll(qty_s));
+        ++count;
+    }
+    auto end = std::chrono::steady_clock::now();
+    auto time = std::chrono::duration<double>(end - start).count();
+
+    std::cout << "Added " << count << " orders.\n" << "Took " << time << " seconds.\n";
+    std::cout << "Bid: " << book.best_bid() << "\nAsk: " << book.best_ask() << "\n";
+}
+
 int main() {
     // calculate_add_percentiles();
     // calculate_add_throughput();
 
-    add_loop();
+    // add_loop();
+    
+    parse_binance();
 
     return 0;
 }
