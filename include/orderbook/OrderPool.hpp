@@ -36,7 +36,7 @@ class OrderPool {
             }
 
             auto block = blocks_.back().get();
-            Order* order = &block[BLOCK_POINTER];
+            Order* order = &block[BLOCK_POINTER++];
 
             return order;
         }
