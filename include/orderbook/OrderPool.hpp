@@ -14,6 +14,7 @@ class OrderPool {
     public:
         OrderPool() : pointers_{}, free_orders_{} {
             pointers_.reserve(CAPACITY);
+            free_orders_.reserve(CAPACITY / 4);
         }
 
         Order* allocate() {
