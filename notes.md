@@ -36,4 +36,5 @@
     Throughput: 2.19636e+07 orders/sec (0.0455298s total)
 
 <h2>Binance stream:</h2>
+
     442239 orders in 0.0921294 seconds.
