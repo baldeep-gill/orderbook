@@ -45,7 +45,7 @@ ResultCode OrderBook::market_order(Side side, Quantity quantity) {
         while (it != asks_.end() && quantity > 0) {
             auto& level = it->second;
 
-            Quantity level_filled = level.match(quantity);
+            Quantity level_filled = level.match(quantity, orderpool_);
             filled += level_filled;
             quantity -= level_filled;
 
@@ -59,7 +59,7 @@ ResultCode OrderBook::market_order(Side side, Quantity quantity) {
         while (it != bids_.end() && quantity > 0) {
             auto& level = it->second;
 
-            Quantity level_filled = level.match(quantity);
+            Quantity level_filled = level.match(quantity, orderpool_);
             filled += level_filled;
             quantity -= level_filled;
 
@@ -83,12 +83,17 @@ Price OrderBook::best_ask() const {
 }
 
 Order* OrderBook::create_order(OrderId id, Side side, Price price, Quantity quantity) {
-    std::unique_ptr<Order> order = std::make_unique<Order>(id, side, price, quantity, 0, 0);
-    Order* raw_ptr = order.get();
-    orders_.push_back(std::move(order));
-    order_lookup_[id] = raw_ptr;
+    Order* order = orderpool_.allocate();
+    order->id = id;
+    order->side = side;
+    order->price = price;
+    order->total_quantity = quantity;
+    order->filled_quantity = 0;
+    order->timestamp = 0;
 
-    return raw_ptr;
+    order_lookup_[id] = order;
+
+    return order;
 }
 
 PriceLevel& OrderBook::get_or_create_level(Side side, Price price) {
@@ -117,7 +122,7 @@ Quantity OrderBook::match(Side side, Price price, Quantity quantity) {
         for (auto it = asks_.begin(); it != end_it && quantity > 0; ++it) {
             auto& level = it->second;
 
-            Quantity level_filled = level.match(quantity);
+            Quantity level_filled = level.match(quantity, orderpool_);
             filled += level_filled;
             quantity -= level_filled;
 
@@ -135,7 +140,7 @@ Quantity OrderBook::match(Side side, Price price, Quantity quantity) {
         for (auto it = bids_.begin(); it != end_it && quantity > 0; ++it) {
             auto& level = it->second;
 
-            Quantity level_filled = level.match(quantity);
+            Quantity level_filled = level.match(quantity, orderpool_);
             filled += level_filled;
             quantity -= level_filled;
 

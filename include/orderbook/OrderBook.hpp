@@ -6,12 +6,13 @@
 #include <vector>
 
 #include "Order.hpp"
+#include "OrderPool.hpp"
 #include "PriceLevel.hpp"
 #include "ResultCode.hpp"
 
 class OrderBook {
 public:
-    OrderBook() : bids_{}, asks_{}, orders_{}, order_lookup_{} {};
+    OrderBook() : orderpool_{}, bids_{}, asks_{}, order_lookup_{} {};
 
     OrderBook(OrderBook& other) = delete;
     void operator=(OrderBook& other) = delete;
@@ -27,11 +28,11 @@ public:
     Price best_ask() const;
 
 private:
+    OrderPool orderpool_;
+
     std::map<Price, PriceLevel, std::greater<Price>> bids_;
     std::map<Price, PriceLevel, std::less<Price>> asks_;
     
-    std::vector<std::unique_ptr<Order>> orders_;
-
     std::unordered_map<OrderId, Order*> order_lookup_;
 
     Order* create_order(OrderId id, Side side, Price price, Quantity quantity);

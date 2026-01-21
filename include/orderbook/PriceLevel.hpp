@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Order.hpp"
+#include "OrderPool.hpp"
 
 struct PriceLevel {
     public:
@@ -21,7 +22,7 @@ struct PriceLevel {
             return quantity; 
         }
 
-        Quantity match(Quantity incoming) {
+        Quantity match(Quantity incoming, OrderPool& pool) {
             Quantity total = 0;
 
             while (!level.empty() && incoming > 0) {
@@ -36,6 +37,7 @@ struct PriceLevel {
                 
                 if (order->open_quantity() == 0) {
                     level.pop_front();
+                    pool.free(order);                    
                 }
             }
 

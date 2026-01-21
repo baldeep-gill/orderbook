@@ -13,7 +13,7 @@ TEST(OrderBookTest, SimpleMatchTest) {
     OrderBook book{};
 
     book.add_order(0, Side::Buy, 100.0, 50);
-    book.add_order(1 , Side::Buy, 120.0, 10);
+    book.add_order(1, Side::Buy, 120.0, 10);
     ASSERT_EQ(book.best_bid(), 120);
     
     book.add_order(2, Side::Buy, 99.9, 50);    
