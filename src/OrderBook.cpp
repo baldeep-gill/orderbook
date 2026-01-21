@@ -83,20 +83,12 @@ Price OrderBook::best_ask() const {
 }
 
 Order* OrderBook::create_order(OrderId id, Side side, Price price, Quantity quantity) {
-    std::unique_ptr<Order> ptr = std::make_unique<Order>();
-    Order* order = ptr.get();
+    std::unique_ptr<Order> order = std::make_unique<Order>(id, side, price, quantity, 0, 0);
+    Order* raw_ptr = order.get();
+    orders_.push_back(std::move(order));
+    order_lookup_[id] = raw_ptr;
 
-    order->id = id;
-    order->side = side;
-    order->price = price;
-    order->total_quantity = quantity;
-    order->filled_quantity = 0;
-    order->timestamp = get_timestamp();
-
-    orders_.push_back(std::move(ptr));
-    order_lookup_[id] = order;
-
-    return order;
+    return raw_ptr;
 }
 
 PriceLevel& OrderBook::get_or_create_level(Side side, Price price) {
@@ -116,41 +108,41 @@ void OrderBook::remove_order(Order* order) {
 Quantity OrderBook::match(Side side, Price price, Quantity quantity) {
     Quantity filled = 0;
 
+    std::vector<std::map<Price, PriceLevel>::iterator> to_erase{};
+
     if (side == Side::Buy) {
+        if (price < best_ask()) return 0;
 
-        if (price < best_ask()) { // no match, early return
-            return 0;
-        }
-
-        auto it = asks_.begin();
-        while (it != asks_.end() && quantity > 0 && it->first <= price) {
+        auto end_it = asks_.upper_bound(price);
+        for (auto it = asks_.begin(); it != end_it && quantity > 0; ++it) {
             auto& level = it->second;
 
             Quantity level_filled = level.match(quantity);
             filled += level_filled;
             quantity -= level_filled;
 
-            if (level.empty()) { it = asks_.erase(it); }
-            else { ++it; }
+            if (level.empty())  to_erase.push_back(it);
         }
+
+        for (auto it: to_erase) asks_.erase(it);
 
         return filled;
-    } else { // Side::Sell
-        if (price > best_bid()) {
-            return 0;
-        }
 
-        auto it = bids_.begin();
-        while (it != bids_.end() && quantity > 0 && it->first >= price) {
+    } else { 
+        if (price > best_bid()) return 0;
+
+        auto end_it = bids_.upper_bound(price);
+        for (auto it = bids_.begin(); it != end_it && quantity > 0; ++it) {
             auto& level = it->second;
 
             Quantity level_filled = level.match(quantity);
             filled += level_filled;
             quantity -= level_filled;
 
-            if (level.empty()) { it = bids_.erase(it); }
-            else { ++it; }
+            if (level.empty()) to_erase.push_back(it); 
         }
+
+        for (auto it: to_erase) bids_.erase(it);
 
         return filled;
     }

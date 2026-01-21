@@ -95,12 +95,12 @@ void parse_binance() {
 }
 
 int main() {
-    // calculate_add_percentiles();
-    // calculate_add_throughput();
+    calculate_add_percentiles();
+    calculate_add_throughput();
 
-    // add_loop();
-    
     parse_binance();
+    
+    // add_loop();
 
     return 0;
 }

@@ -44,7 +44,7 @@ struct PriceLevel {
             return total;
         }
 
-        bool empty() { return level.empty (); }
+        bool empty() { return level.empty(); }
     
     private:
         std::list<Order*> level{};
