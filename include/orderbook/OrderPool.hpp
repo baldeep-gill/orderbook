@@ -8,14 +8,19 @@
 class OrderPool {
     private:
         static constexpr size_t CAPACITY = 250'000;
-        std::vector<std::unique_ptr<Order>> pointers_;
+        static constexpr size_t BLOCK_SIZE = 50'000;
+        
+        std::vector<std::unique_ptr<Order[]>> blocks_;
+        std::size_t BLOCK_POINTER = 0;
         std::vector<Order*> free_orders_;
 
     public:
-        OrderPool() : pointers_{}, free_orders_{} {
-            pointers_.reserve(CAPACITY);
+        OrderPool() : free_orders_{} {
+            blocks_.emplace_back(std::make_unique<Order[]>(CAPACITY));
             free_orders_.reserve(CAPACITY / 4);
         }
+
+        ~OrderPool() = default;
 
         Order* allocate() {
             if (!free_orders_.empty()) {
@@ -24,11 +29,14 @@ class OrderPool {
 
                 return order;
             }
-
-            std::unique_ptr<Order> ptr = std::make_unique<Order>();
             
-            Order* order = ptr.get();
-            pointers_.push_back(std::move(ptr));
+            if (blocks_.empty() || BLOCK_POINTER == BLOCK_SIZE) {
+                blocks_.emplace_back(std::make_unique<Order[]>(BLOCK_SIZE));
+                BLOCK_POINTER = 0;
+            }
+
+            auto block = blocks_.back().get();
+            Order* order = &block[BLOCK_POINTER];
 
             return order;
         }
