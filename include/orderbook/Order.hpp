@@ -21,5 +21,8 @@ struct Order {
 
     std::uint64_t timestamp;
 
-    std::list<Order*>::iterator it;
+    // std::list<Order*>::iterator it;
+
+    Order* prev{nullptr};
+    Order* next{nullptr};
 };

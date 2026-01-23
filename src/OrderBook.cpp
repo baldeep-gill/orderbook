@@ -13,8 +13,7 @@ ResultCode OrderBook::add_order(OrderId id, Side side, Price price, Quantity qua
     if (remaining) {
         Order* order = create_order(id ,side, price, remaining);
         auto& level = get_or_create_level(side, price);
-        auto it = level.insert(order);
-        order->it = it;
+        level.insert(order);
 
         if (remaining == quantity) return ResultCode::Add_Success;
         else return ResultCode::Add_PartialFill;
@@ -96,14 +95,14 @@ Order* OrderBook::create_order(OrderId id, Side side, Price price, Quantity quan
     return order;
 }
 
-PriceLevel& OrderBook::get_or_create_level(Side side, Price price) {
+IntrusivePriceLevel& OrderBook::get_or_create_level(Side side, Price price) {
     if (side == Side::Buy) return bids_[price];
     else return asks_[price]; 
 }
 
 void OrderBook::remove_order(Order* order) {
     auto& level = get_or_create_level(order->side, order->price);
-    level.erase(order->it);
+    level.erase(order);
 
     if (level.empty()) {
         (order->side == Side::Buy) ? bids_.erase(order->price) : asks_.erase(order->price);
@@ -114,7 +113,7 @@ template<OrderBookLevels Levels>
 Quantity OrderBook::perform_match(Levels& levels, Price price, Quantity quantity) {
     Quantity filled = 0;
 
-    std::vector<std::map<Price, PriceLevel>::iterator> to_erase{};
+    std::vector<std::map<Price, IntrusivePriceLevel>::iterator> to_erase{};
 
     auto end_it = levels.upper_bound(price);
     for (auto it = levels.begin(); it != end_it && quantity > 0; ++it) {
