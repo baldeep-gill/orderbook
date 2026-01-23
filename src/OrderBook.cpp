@@ -95,7 +95,7 @@ Order* OrderBook::create_order(OrderId id, Side side, Price price, Quantity quan
     return order;
 }
 
-IntrusivePriceLevel& OrderBook::get_or_create_level(Side side, Price price) {
+PriceLevel& OrderBook::get_or_create_level(Side side, Price price) {
     if (side == Side::Buy) return bids_[price];
     else return asks_[price]; 
 }
@@ -113,7 +113,7 @@ template<OrderBookLevels Levels>
 Quantity OrderBook::perform_match(Levels& levels, Price price, Quantity quantity) {
     Quantity filled = 0;
 
-    std::vector<std::map<Price, IntrusivePriceLevel>::iterator> to_erase{};
+    std::vector<std::map<Price, PriceLevel>::iterator> to_erase{};
 
     auto end_it = levels.upper_bound(price);
     for (auto it = levels.begin(); it != end_it && quantity > 0; ++it) {

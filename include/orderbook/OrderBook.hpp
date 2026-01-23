@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "IntrusivePriceLevel.hpp"
 #include "Order.hpp"
 #include "OrderPool.hpp"
 #include "PriceLevel.hpp"
@@ -21,7 +20,7 @@ concept OrderBookLevels = requires(T& levels, Price price) {
     typename T::key_compare;
 
     std::same_as<typename T::key_type, Price>;
-    std::same_as<typename T::mapped_type, IntrusivePriceLevel>;
+    std::same_as<typename T::mapped_type, PriceLevel>;
 
     std::derived_from<typename T::key_compare, std::greater<Price>> ||
     std::derived_from<typename T::key_compare, std::less<Price>>;
@@ -47,13 +46,13 @@ public:
 private:
     OrderPool orderpool_;
 
-    std::map<Price, IntrusivePriceLevel, std::greater<Price>> bids_;
-    std::map<Price, IntrusivePriceLevel, std::less<Price>> asks_;
+    std::map<Price, PriceLevel, std::greater<Price>> bids_;
+    std::map<Price, PriceLevel, std::less<Price>> asks_;
     
     std::unordered_map<OrderId, Order*> order_lookup_;
 
     Order* create_order(OrderId id, Side side, Price price, Quantity quantity);
-    IntrusivePriceLevel& get_or_create_level(Side side, Price price);
+    PriceLevel& get_or_create_level(Side side, Price price);
     void remove_order(Order* order);
     Quantity match(Side side, Price price, Quantity quantity);
     uint64_t get_timestamp();

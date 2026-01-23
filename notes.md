@@ -39,3 +39,17 @@
 <h2>Binance stream:</h2>
 
     442239 orders in 0.0921294 seconds.
+
+<h1>Intrusive List</h1>
+
+<h2>1,000,000 order adds:</h2>
+
+    P50: 40ns
+    P95: 41ns
+    P99: 71ns
+
+    Throughput: 1.93423e+07 orders/sec (0.0517002s total)   
+
+<h2>Binance stream:</h2>
+
+    442239 orders in 0.0897728 seconds.
