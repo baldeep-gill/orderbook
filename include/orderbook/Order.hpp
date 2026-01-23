@@ -12,6 +12,9 @@ enum class Side { Buy, Sell };
 enum class OrderType { Limit, Market };
 
 struct Order {
+    Order* prev{nullptr};
+    Order* next{nullptr};
+    
     OrderId id;
     Side side;
     Price price;
@@ -20,6 +23,4 @@ struct Order {
     Quantity open_quantity() { return total_quantity - filled_quantity; }
 
     std::uint64_t timestamp;
-
-    std::list<Order*>::iterator it;
 };

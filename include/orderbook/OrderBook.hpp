@@ -1,5 +1,6 @@
 #pragma once
 
+#include <concepts>
 #include <map>
 #include <memory>
 #include <unordered_map>
@@ -9,6 +10,21 @@
 #include "OrderPool.hpp"
 #include "PriceLevel.hpp"
 #include "ResultCode.hpp"
+
+template<typename T>
+concept OrderBookLevels = requires(T& levels, Price price) {
+    //std::map<Price, PriceLevel, Comparator>
+
+    typename T::key_type;
+    typename T::mapped_type;
+    typename T::key_compare;
+
+    std::same_as<typename T::key_type, Price>;
+    std::same_as<typename T::mapped_type, PriceLevel>;
+
+    std::derived_from<typename T::key_compare, std::greater<Price>> ||
+    std::derived_from<typename T::key_compare, std::less<Price>>;
+};
 
 class OrderBook {
 public:
@@ -40,4 +56,7 @@ private:
     void remove_order(Order* order);
     Quantity match(Side side, Price price, Quantity quantity);
     uint64_t get_timestamp();
+
+    template<OrderBookLevels Levels>
+    Quantity perform_match(Levels& level, Price price, Quantity quantity);
 };

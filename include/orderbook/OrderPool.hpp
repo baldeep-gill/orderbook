@@ -20,6 +20,11 @@ class OrderPool {
             free_orders_.reserve(CAPACITY / 4);
         }
 
+        OrderPool(size_t size) : free_orders_{} {
+            blocks_.emplace_back(std::make_unique<Order[]>(size));
+            free_orders_.reserve(size / 4);
+        }
+
         ~OrderPool() = default;
 
         Order* allocate() {

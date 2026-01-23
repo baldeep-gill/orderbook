@@ -4,51 +4,81 @@
 #include "OrderPool.hpp"
 
 struct PriceLevel {
-    public:
-        using Iterator = std::list<Order*>::iterator;
+    private: 
+        Quantity quantity_{0};
+        Order* head_{nullptr};
+        Order* tail_{nullptr};
+        size_t length_{0};
 
-        Iterator insert(Order* order) {
-            level.push_back(order);
-            quantity += order->open_quantity();
-            return std::prev(level.end());
+    public:
+        void insert(Order* order) {       
+            if (tail_) {
+                tail_->next = order;
+                order->prev = tail_;
+                tail_ = order;
+            }
+
+            if (!head_) {
+                head_ = order;
+                tail_ = order;
+            }
+
+            quantity_ += order->open_quantity();
+            ++length_;
         }
 
-        void erase(Iterator it) {
-            quantity -= (*it)->open_quantity();
-            level.erase(it);
+        void erase(Order* order, OrderPool& orderpool) {
+            Order* prev_node = order->prev;
+            Order* next_node = order->next;
+
+            order->prev = nullptr;
+            order->next = nullptr;
+            
+            if (prev_node) prev_node->next = next_node;
+            else head_ = next_node;
+
+            if (next_node) next_node->prev = prev_node;
+            else tail_ = prev_node;
+
+            orderpool.free(order);
+
+            quantity_ -= order->open_quantity();
+            --length_;
+        }
+
+        Quantity quantity() const {
+            return quantity_;
+        }
+
+        bool empty() const {
+            return head_ == nullptr;
+        }
+
+        size_t length() const {
+            return length_;
+        }
+
+        Order* head() const {
+            return head_;
         }
         
-        Quantity get_quantity() const {
-            return quantity; 
-        }
-
-        Quantity match(Quantity incoming, OrderPool& pool) {
+        Quantity match(Quantity incoming, OrderPool& orderpool) {
             Quantity total = 0;
 
-            while (!level.empty() && incoming > 0) {
-                Order* order = level.front();
+            while (head_ && incoming > 0) {
+                Quantity filled = std::min(incoming, head_->open_quantity());
 
-                Quantity filled = std::min(incoming, order->open_quantity());
-
-                order->filled_quantity += filled;
+                head_->filled_quantity += filled;
 
                 total += filled;
                 incoming -= filled;
-                
-                if (order->open_quantity() == 0) {
-                    level.pop_front();
-                    pool.free(order);                    
+
+                if (head_->open_quantity() == 0) {
+                    erase(head_, orderpool);
                 }
             }
 
-            quantity -= total;
-
+            quantity_ -= total;
             return total;
         }
-
-        bool empty() { return level.empty(); }
-    
-    private:
-        std::list<Order*> level{};
-        Quantity quantity{0};
 };

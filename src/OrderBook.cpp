@@ -13,8 +13,7 @@ ResultCode OrderBook::add_order(OrderId id, Side side, Price price, Quantity qua
     if (remaining) {
         Order* order = create_order(id ,side, price, remaining);
         auto& level = get_or_create_level(side, price);
-        auto it = level.insert(order);
-        order->it = it;
+        level.insert(order);
 
         if (remaining == quantity) return ResultCode::Add_Success;
         else return ResultCode::Add_PartialFill;
@@ -103,53 +102,42 @@ PriceLevel& OrderBook::get_or_create_level(Side side, Price price) {
 
 void OrderBook::remove_order(Order* order) {
     auto& level = get_or_create_level(order->side, order->price);
-    level.erase(order->it);
+    level.erase(order, orderpool_);
 
     if (level.empty()) {
         (order->side == Side::Buy) ? bids_.erase(order->price) : asks_.erase(order->price);
     }
 }
 
-Quantity OrderBook::match(Side side, Price price, Quantity quantity) {
+template<OrderBookLevels Levels>
+Quantity OrderBook::perform_match(Levels& levels, Price price, Quantity quantity) {
     Quantity filled = 0;
 
     std::vector<std::map<Price, PriceLevel>::iterator> to_erase{};
 
+    auto end_it = levels.upper_bound(price);
+    for (auto it = levels.begin(); it != end_it && quantity > 0; ++it) {
+        auto& level = it->second;
+
+        Quantity level_filled = level.match(quantity, orderpool_);
+        filled += level_filled;
+        quantity -= level_filled;
+        
+        if (level.empty()) to_erase.push_back(it);
+    }
+
+    for (auto it: to_erase) levels.erase(it);
+
+    return filled;
+}
+
+Quantity OrderBook::match(Side side, Price price, Quantity quantity) {
     if (side == Side::Buy) {
         if (price < best_ask()) return 0;
-
-        auto end_it = asks_.upper_bound(price);
-        for (auto it = asks_.begin(); it != end_it && quantity > 0; ++it) {
-            auto& level = it->second;
-
-            Quantity level_filled = level.match(quantity, orderpool_);
-            filled += level_filled;
-            quantity -= level_filled;
-
-            if (level.empty())  to_erase.push_back(it);
-        }
-
-        for (auto it: to_erase) asks_.erase(it);
-
-        return filled;
-
-    } else { 
+        return perform_match(asks_, price, quantity);
+    } else {
         if (price > best_bid()) return 0;
-
-        auto end_it = bids_.upper_bound(price);
-        for (auto it = bids_.begin(); it != end_it && quantity > 0; ++it) {
-            auto& level = it->second;
-
-            Quantity level_filled = level.match(quantity, orderpool_);
-            filled += level_filled;
-            quantity -= level_filled;
-
-            if (level.empty()) to_erase.push_back(it); 
-        }
-
-        for (auto it: to_erase) bids_.erase(it);
-
-        return filled;
+        return perform_match(bids_, price, quantity);
     }
 }
 

@@ -46,7 +46,7 @@ void calculate_add_throughput() {
 
     auto end = std::chrono::steady_clock::now();
     auto time = std::chrono::duration<double>(end - start).count();
-    long double tp = static_cast<long double>(N) / time;
+    long double tp = N / time;
 
     std::cout << "Throughput: " << tp << " orders/sec (" << time << "s total)\n\n"; 
 }
