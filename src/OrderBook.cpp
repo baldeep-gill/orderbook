@@ -102,7 +102,7 @@ IntrusivePriceLevel& OrderBook::get_or_create_level(Side side, Price price) {
 
 void OrderBook::remove_order(Order* order) {
     auto& level = get_or_create_level(order->side, order->price);
-    level.erase(order);
+    level.erase(order, orderpool_);
 
     if (level.empty()) {
         (order->side == Side::Buy) ? bids_.erase(order->price) : asks_.erase(order->price);

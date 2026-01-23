@@ -27,7 +27,7 @@ struct IntrusivePriceLevel {
             ++length_;
         }
 
-        void erase(Order* order) {
+        void erase(Order* order, OrderPool& orderpool) {
             Order* prev_node = order->prev;
             Order* next_node = order->next;
 
@@ -39,7 +39,9 @@ struct IntrusivePriceLevel {
 
             if (next_node) next_node->prev = prev_node;
             else tail_ = prev_node;
-            
+
+            orderpool.free(order);
+
             quantity_ -= order->open_quantity();
             --length_;
         }
@@ -55,8 +57,12 @@ struct IntrusivePriceLevel {
         size_t length() const {
             return length_;
         }
+
+        Order* head() const {
+            return head_;
+        }
         
-        Quantity match(Quantity incoming, OrderPool& pool) {
+        Quantity match(Quantity incoming, OrderPool& orderpool) {
             Quantity total = 0;
 
             while (head_ && incoming > 0) {
@@ -68,8 +74,7 @@ struct IntrusivePriceLevel {
                 incoming -= filled;
 
                 if (head_->open_quantity() == 0) {
-                    pool.free(head_);
-                    erase(head_);
+                    erase(head_, orderpool);
                 }
             }
 

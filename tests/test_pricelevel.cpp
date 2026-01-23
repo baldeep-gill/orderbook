@@ -30,7 +30,7 @@ TEST(PriceLevelTest, EraseDecreasesQuantityByRemainingAmount) {
     EXPECT_EQ(a.filled_quantity, 4);
     EXPECT_EQ(level.quantity(), 6);
 
-    level.erase(&a);
+    level.erase(&a, pool);
     EXPECT_EQ(level.quantity(), 0);
 }
 
