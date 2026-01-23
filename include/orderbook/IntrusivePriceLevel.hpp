@@ -30,6 +30,9 @@ struct IntrusivePriceLevel {
         void erase(Order* order) {
             Order* prev_node = order->prev;
             Order* next_node = order->next;
+
+            order->prev = nullptr;
+            order->next = nullptr;
             
             if (prev_node) prev_node->next = next_node;
             else head_ = next_node;
@@ -46,7 +49,7 @@ struct IntrusivePriceLevel {
         }
 
         bool empty() const {
-            return length_ == 0;
+            return head_ == nullptr;
         }
 
         size_t length() const {
@@ -65,8 +68,8 @@ struct IntrusivePriceLevel {
                 incoming -= filled;
 
                 if (head_->open_quantity() == 0) {
-                    erase(head_);
                     pool.free(head_);
+                    erase(head_);
                 }
             }
 
