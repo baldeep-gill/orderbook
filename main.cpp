@@ -5,7 +5,7 @@
 #include <vector>
 #include <filesystem>
 
-#include "orderbook/OrderBook.hpp"
+#include "itch_parser/ItchParser.hpp"
 
 constexpr std::size_t N = 1'000'000;
 
@@ -95,12 +95,16 @@ void parse_binance() {
 }
 
 int main() {
-    calculate_add_percentiles();
-    calculate_add_throughput();
+    // calculate_add_percentiles();
+    // calculate_add_throughput();
 
-    parse_binance();
+    // parse_binance();
     
     // add_loop();
+
+    OrderBook book{};
+    ItchParser parser{book};
+    parser.parse_file();
 
     return 0;
 }

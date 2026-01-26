@@ -14,8 +14,12 @@ add_library(orderbook src/OrderBook.cpp)
 target_include_directories(orderbook PUBLIC include)
 target_compile_features(orderbook PUBLIC cxx_std_20)
 
+add_library(itch_parser src/ItchParser.cpp)
+target_include_directories(itch_parser PUBLIC include)
+target_compile_features(itch_parser PUBLIC cxx_std_20)
 
 add_executable(orderbook_app main.cpp)
 target_link_libraries(orderbook_app PRIVATE orderbook)
+target_link_libraries(orderbook_app PRIVATE itch_parser)
 
 add_subdirectory(tests)
