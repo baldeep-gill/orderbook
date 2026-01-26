@@ -12,6 +12,7 @@ enum class Side { Buy, Sell };
 enum class OrderType { Limit, Market };
 
 struct Order {
+    alignas(64) 
     Order* prev{nullptr};
     Order* next{nullptr};
     

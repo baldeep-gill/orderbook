@@ -12,6 +12,8 @@
 
     442239 orders in 0.100738 seconds.
 
+
+
 <h1>OrderPool</h1>
 
 <h2>1,000,000 order adds:</h2>
@@ -25,6 +27,8 @@
 <h2>Binance stream:</h2>
 
     442239 orders in 0.0932754 seconds.
+
+
 
 <h1>OrderPool w/ blocks</h1>
 
@@ -40,6 +44,8 @@
 
     442239 orders in 0.0921294 seconds.
 
+
+
 <h1>Intrusive List</h1>
 
 <h2>1,000,000 order adds:</h2>
@@ -53,3 +59,19 @@
 <h2>Binance stream:</h2>
 
     442239 orders in 0.0897728 seconds.
+
+
+
+<h1>Aligned Order objects</h1>
+
+<h2>1,000,000 order adds:</h2>
+
+    P50: 40ns
+    P95: 41ns
+    P99: 71ns
+
+    Throughput: 2.07487e+07 orders/sec (0.0481957s total)   
+
+<h2>Binance stream:</h2>
+
+    442239 orders in 0.0925621 seconds.
