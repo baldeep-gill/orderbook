@@ -102,9 +102,10 @@ int main() {
     
     // add_loop();
 
-    OrderBook book{};
-    ItchParser parser{book};
+    ItchParser parser{[](ItchMessage msg) {
+        // std::visit([](auto&& arg){ std::cout << arg.message_type; }, msg);
+    }};
     parser.parse_file();
-
+    std::cout << "\n";
     return 0;
 }

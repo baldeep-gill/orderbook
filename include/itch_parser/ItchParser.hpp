@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <chrono>
 #include <fstream>
+#include <functional>
+#include <variant>
 
 #include "orderbook/OrderBook.hpp"
 
@@ -13,6 +15,7 @@ namespace Messages {
     #pragma pack(push, 1)
 
         struct S_SystemEvent {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -20,6 +23,7 @@ namespace Messages {
         };
 
         struct R_StockDirectory {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -40,6 +44,7 @@ namespace Messages {
         };
 
         struct H_StockTradingAction {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -50,6 +55,7 @@ namespace Messages {
         };
 
         struct Y_RegSHOShortPriceTestRestricted {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -58,6 +64,7 @@ namespace Messages {
         };
 
         struct L_MarketParticipantPositon {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -69,6 +76,7 @@ namespace Messages {
         };
 
         struct V_MarketWideCircuitBreakerDecline {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -78,6 +86,7 @@ namespace Messages {
         };
 
         struct W_MarketWideCircuitBreakerStatus {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -85,6 +94,7 @@ namespace Messages {
         };
 
         struct K_IPOQuotingPeriodUpdate {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -95,6 +105,7 @@ namespace Messages {
         };
 
         struct J_LULDCollar {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -106,6 +117,7 @@ namespace Messages {
         };
 
         struct h_OperationalHalt {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -115,6 +127,7 @@ namespace Messages {
         };
 
         struct A_AddOrder {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -126,6 +139,7 @@ namespace Messages {
         };
 
         struct F_AddOrderMPID {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -138,6 +152,7 @@ namespace Messages {
         };
 
         struct E_OrderExecuted {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -147,6 +162,7 @@ namespace Messages {
         };
 
         struct C_OrderExecutedMessage {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -158,6 +174,7 @@ namespace Messages {
         };
 
         struct X_OrderCancel {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -166,6 +183,7 @@ namespace Messages {
         };
 
         struct D_OrderDelete {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -173,6 +191,7 @@ namespace Messages {
         };
 
         struct U_OrderReplace {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -183,6 +202,7 @@ namespace Messages {
         };
 
         struct P_TradeNonCross {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -195,6 +215,7 @@ namespace Messages {
         };
 
         struct Q_TradeCross {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -206,6 +227,7 @@ namespace Messages {
         };
 
         struct B_BrokenTrade {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -213,6 +235,7 @@ namespace Messages {
         };
 
         struct I_NOII {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -228,6 +251,7 @@ namespace Messages {
         };
 
         struct O_DirectListingCapitalRaise {
+            char message_type;
             std::uint16_t stock_locate;
             std::uint16_t tracking_number;
             char timestamp[6];
@@ -244,13 +268,39 @@ namespace Messages {
     #pragma pack(pop)
 } // namespace Messages
 
+using ItchMessage = std::variant<
+    Messages::S_SystemEvent, 
+    Messages::R_StockDirectory,
+    Messages::H_StockTradingAction,
+    Messages::Y_RegSHOShortPriceTestRestricted,
+    Messages::L_MarketParticipantPositon,
+    Messages::V_MarketWideCircuitBreakerDecline,
+    Messages::W_MarketWideCircuitBreakerStatus,
+    Messages::K_IPOQuotingPeriodUpdate,
+    Messages::J_LULDCollar,
+    Messages::h_OperationalHalt,
+    Messages::A_AddOrder,
+    Messages::F_AddOrderMPID,
+    Messages::E_OrderExecuted,
+    Messages::C_OrderExecutedMessage,
+    Messages::X_OrderCancel,
+    Messages::D_OrderDelete,
+    Messages::U_OrderReplace,
+    Messages::P_TradeNonCross,
+    Messages::Q_TradeCross,
+    Messages::B_BrokenTrade,
+    Messages::I_NOII,
+    Messages::O_DirectListingCapitalRaise
+>;
+
 class ItchParser {
     public:
-        ItchParser() = default; 
+        ItchParser(std::function<void(ItchMessage)> cb) : parser_callback_{cb} {}; 
 
         void parse_file();
 
     private:
-        void parse_message(char* buffer, size_t size, char message_type);
+        std::function<void(ItchMessage)> parser_callback_;
 
+        ItchMessage parse_message(char* buffer, size_t size, char message_type);
 };
