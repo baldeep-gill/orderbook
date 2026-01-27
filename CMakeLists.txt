@@ -18,6 +18,10 @@ add_library(itch_parser src/ItchParser.cpp)
 target_include_directories(itch_parser PUBLIC include)
 target_compile_features(itch_parser PUBLIC cxx_std_20)
 
+add_library(message_handler src/MessageHandler.cpp)
+target_include_directories(message_handler PUBLIC include)
+target_compile_features(message_handler PUBLIC cxx_std_20)
+
 add_executable(orderbook_app main.cpp)
 target_link_libraries(orderbook_app PRIVATE orderbook)
 target_link_libraries(orderbook_app PRIVATE itch_parser)
