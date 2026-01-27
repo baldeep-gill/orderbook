@@ -37,8 +37,10 @@ public:
     void operator=(OrderBook&& other) = delete;
 
     ResultCode add_order(OrderId id, Side side, Price price, Quantity quantity);
-    ResultCode cancel(OrderId id);
+    ResultCode delete_order(OrderId id);
+    ResultCode cancel_order(OrderId id, Quantity quantity);
     ResultCode market_order(Side side, Quantity quantity);
+    ResultCode replace_order(OrderId oldID, OrderId newID, Price price, Quantity quantity);
 
     Price best_bid() const; // optional?
     Price best_ask() const;

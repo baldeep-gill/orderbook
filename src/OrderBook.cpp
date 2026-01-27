@@ -22,14 +22,14 @@ ResultCode OrderBook::add_order(OrderId id, Side side, Price price, Quantity qua
     return ResultCode::Add_Fail;
 }
 
-ResultCode OrderBook::cancel(OrderId id) {
+ResultCode OrderBook::delete_order(OrderId id) {
     auto it = order_lookup_.find(id);
     if (it != order_lookup_.end()) {
         Order* order = it->second;
         remove_order(order);
         order_lookup_.erase(id);
 
-        return ResultCode::Cancel_Success;
+        return ResultCode::Cancel_Success;  //TODO: Change result code name + test asserts
     } else {
         return ResultCode::Cancel_Fail;
     }
