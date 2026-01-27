@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <variant>
 
 using Price4 = std::uint32_t;
 
@@ -260,3 +261,28 @@ namespace Messages {
 
     #pragma pack(pop)
 } // namespace Messages
+
+using ItchMessage = std::variant<
+    Messages::S_SystemEvent, 
+    Messages::R_StockDirectory,
+    Messages::H_StockTradingAction,
+    Messages::Y_RegSHOShortPriceTestRestricted,
+    Messages::L_MarketParticipantPositon,
+    Messages::V_MarketWideCircuitBreakerDecline,
+    Messages::W_MarketWideCircuitBreakerStatus,
+    Messages::K_IPOQuotingPeriodUpdate,
+    Messages::J_LULDCollar,
+    Messages::h_OperationalHalt,
+    Messages::A_AddOrder,
+    Messages::F_AddOrderMPID,
+    Messages::E_OrderExecuted,
+    Messages::C_OrderExecutedMessage,
+    Messages::X_OrderCancel,
+    Messages::D_OrderDelete,
+    Messages::U_OrderReplace,
+    Messages::P_TradeNonCross,
+    Messages::Q_TradeCross,
+    Messages::B_BrokenTrade,
+    Messages::I_NOII,
+    Messages::O_DirectListingCapitalRaise
+>;
