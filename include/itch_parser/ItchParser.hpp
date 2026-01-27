@@ -293,14 +293,16 @@ using ItchMessage = std::variant<
     Messages::O_DirectListingCapitalRaise
 >;
 
+using MessageCallback = std::function<void(const ItchMessage&)>;
+
 class ItchParser {
     public:
-        ItchParser(std::function<void(ItchMessage)> cb) : parser_callback_{cb} {}; 
+        ItchParser(MessageCallback cb) : parser_callback_{cb} {}; 
 
         void parse_file();
 
     private:
-        std::function<void(ItchMessage)> parser_callback_;
+        MessageCallback parser_callback_;
 
         ItchMessage parse_message(char* buffer, size_t size, char message_type);
 };

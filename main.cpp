@@ -2,9 +2,15 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <string_view>
 #include <vector>
 #include <filesystem>
 
+#define swapEndian16(x) __builtin_bswap16(x)
+#define swapEndian32(x) __builtin_bswap32(x)
+#define swapEndian64(x) __builtin_bswap64(x)
+
+#include "orderbook/OrderBook.hpp"
 #include "itch_parser/ItchParser.hpp"
 
 constexpr std::size_t N = 1'000'000;
@@ -94,6 +100,66 @@ void parse_binance() {
     std::cout << "Bid: " << book.best_bid() << "\nAsk: " << book.best_ask() << "\n";
 }
 
+template<class... Ts>
+struct overloaded : Ts... { 
+    using Ts::operator()...; 
+};
+
+void process_add_order(OrderBook& book, std::uint64_t order_ref, char side, std::uint32_t price, std::uint32_t qty) {
+    book.add_order(
+        swapEndian64(order_ref),
+        static_cast<Side>(side == 'S'),
+        swapEndian32(price) / 10'000.0,
+        swapEndian32(qty)
+    );
+}
+
+std::string_view trim_spaces(std::string_view s, size_t size) {
+    for (size_t i = 0; i < size; ++i) {
+        if (s.at(i) == ' ') return s.substr(0, i);
+    }
+
+    return s;
+}
+
+void benchmark_itch() {
+    OrderBook book{};
+    size_t count{0};
+    std::uint16_t aapl_locate{};    // Big endian!
+
+    auto handler_dispatch = overloaded{
+        [&](const Messages::R_StockDirectory& m) {
+            auto s = trim_spaces(m.stock, 8);
+            
+            if (s == "AAPL") {
+                aapl_locate = m.stock_locate;
+            }
+        },
+        [&](const Messages::A_AddOrder& m) { 
+            if (m.stock_locate == aapl_locate) {
+                process_add_order(book, m.order_reference, m.side, m.price, m.shares);
+                ++count;
+            }
+         },
+        [&](const Messages::F_AddOrderMPID& m) { 
+            if (m.stock_locate == aapl_locate) {
+                process_add_order(book, m.order_reference, m.side, m.price, m.shares);
+                ++count;
+            }
+         },
+        [&](const auto& m) {}
+    };
+
+    auto cb = [&](const ItchMessage& msg) {
+        std::visit(handler_dispatch, msg);
+    };
+
+    ItchParser parser{cb};
+    parser.parse_file();
+    std::cout << "Count: " << count << "\n";
+    std::cout << "Bid: " << book.best_bid() << "\nAsk: " << book.best_ask() << "\n";
+}
+
 int main() {
     // calculate_add_percentiles();
     // calculate_add_throughput();
@@ -102,10 +168,7 @@ int main() {
     
     // add_loop();
 
-    ItchParser parser{[](ItchMessage msg) {
-        // std::visit([](auto&& arg){ std::cout << arg.message_type; }, msg);
-    }};
-    parser.parse_file();
-    std::cout << "\n";
+    benchmark_itch();
+
     return 0;
 }
