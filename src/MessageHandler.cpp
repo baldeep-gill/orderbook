@@ -9,7 +9,7 @@ std::string OrderBookMessageHandler::trim_spaces(const char* s, size_t size) {
     return result;
 }
 
-bool OrderBookMessageHandler::add_order(std::uint64_t id, char side, std::uint32_t price, std::uint32_t qty) {
+void OrderBookMessageHandler::add_order(std::uint64_t id, char side, std::uint32_t price, std::uint32_t qty) {
     book_.add_order(
         __builtin_bswap64(id),
         static_cast<Side>(side == 'S'),

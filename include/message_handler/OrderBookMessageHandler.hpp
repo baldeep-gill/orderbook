@@ -9,7 +9,7 @@ class OrderBookMessageHandler : public MessageHandler {
         std::unordered_map<uint16_t, std::string> stock_locates_;
 
         std::string trim_spaces(const char* s, size_t size);
-        bool add_order(std::uint64_t id, char side, std::uint32_t price, std::uint32_t qty);
+        void add_order(std::uint64_t id, char side, std::uint32_t price, std::uint32_t qty);
         
     public:
         OrderBookMessageHandler(OrderBook& book) : book_{book}, stock_locates_{} {};

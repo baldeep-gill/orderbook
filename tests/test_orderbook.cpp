@@ -80,7 +80,7 @@ TEST(OrderBookTest, CancelRemovesBestBid) {
     book.add_order(2, Side::Buy, 101, 10);
     ASSERT_EQ(book.best_bid(), 101);
 
-    auto rc = book.cancel(2);
+    auto rc = book.delete_order(2);
     EXPECT_EQ(rc, ResultCode::Cancel_Success);
     ASSERT_EQ(book.best_bid(), 100);
 }
@@ -89,7 +89,7 @@ TEST(OrderBookTest, CancelUnknownOrderIdFails) {
     OrderBook book;
     book.add_order(1, Side::Buy, 100, 10);
 
-    auto rc = book.cancel(999);  // non-existent
+    auto rc = book.delete_order(999);  // non-existent
     EXPECT_EQ(rc, ResultCode::Cancel_Fail);  // assert some error code
 }
 
