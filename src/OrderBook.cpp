@@ -35,6 +35,37 @@ ResultCode OrderBook::delete_order(OrderId id) {
     }
 }
 
+ResultCode OrderBook::cancel_order(OrderId id, Quantity quantity) {
+    auto it = order_lookup_.find(id);
+    if (it != order_lookup_.end()) {
+        Order* order = it->second;
+        if (order->open_quantity() > quantity) {
+            order->filled_quantity += quantity;
+        } else if (order->open_quantity() == quantity) {
+            remove_order(order);
+        } else {
+            return ResultCode::Cancel_Fail;
+        }
+    }
+
+    return ResultCode::Cancel_Success;
+}
+
+ResultCode OrderBook::replace_order(OrderId oldID, OrderId newID, Price price, Quantity quantity) {
+    auto it = order_lookup_.find(oldID);
+    if (it == order_lookup_.end()) return ResultCode::Replace_Fail;
+    auto side = it->second->side;
+
+    auto delete_rc = delete_order(oldID);
+    auto add_rc = add_order(newID, side, price, quantity);
+
+    if (delete_rc == ResultCode::Delete_Fail || add_rc == ResultCode::Add_Fail) {
+        return ResultCode::Replace_Fail;
+    }
+
+    return ResultCode::Replace_Success;
+}
+
 ResultCode OrderBook::market_order(Side side, Quantity quantity) {
     Quantity filled = 0;
 
