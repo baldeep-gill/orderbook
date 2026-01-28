@@ -18,7 +18,7 @@ void ItchParser::parse_file() {
         file.read(buffer + 1, message_size - 1);
 
         ItchMessage msg = parse_message(buffer, message_size, message_type);
-        parser_callback_(msg);
+        message_handler_->handle_message(msg);
         
         ++count;
     }

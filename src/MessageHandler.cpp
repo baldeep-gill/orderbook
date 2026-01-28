@@ -20,7 +20,7 @@ void OrderBookMessageHandler::add_order(std::uint64_t id, char side, std::uint32
 
 void OrderBookMessageHandler::process_message(const Messages::R_StockDirectory& msg) {
     std::string ticker = trim_spaces(msg.stock, 8);
-    stock_locates_[__builtin_bswap16(msg.stock_locate)] = ticker;
+    stock_locates_[bswap16(msg.stock_locate)] = ticker;
 }
 
 void OrderBookMessageHandler::process_message(const Messages::A_AddOrder& msg) {

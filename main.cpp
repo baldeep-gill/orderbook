@@ -11,6 +11,7 @@
 #define swapEndian64(x) __builtin_bswap64(x)
 
 #include "orderbook/OrderBook.hpp"
+#include "message_handler/OrderBookMessageHandler.hpp"
 #include "itch_parser/ItchParser.hpp"
 
 constexpr std::size_t N = 1'000'000;
@@ -122,42 +123,47 @@ std::string_view trim_spaces(std::string_view s, size_t size) {
     return s;
 }
 
+// void benchmark_itch() {
+//     OrderBook book{};
+//     size_t count{0};
+//     std::uint16_t aapl_locate{};    // Big endian!
+
+//     auto handler_dispatch = overloaded{
+//         [&](const Messages::R_StockDirectory& m) {
+//             auto s = trim_spaces(m.stock, 8);
+            
+//             if (s == "AAPL") {
+//                 aapl_locate = m.stock_locate;
+//             }
+//         },
+//         [&](const Messages::A_AddOrder& m) { 
+//             if (m.stock_locate == aapl_locate) {
+//                 process_add_order(book, m.order_reference, m.side, m.price, m.shares);
+//                 ++count;
+//             }
+//          },
+//         [&](const Messages::F_AddOrderMPID& m) { 
+//             if (m.stock_locate == aapl_locate) {
+//                 process_add_order(book, m.order_reference, m.side, m.price, m.shares);
+//                 ++count;
+//             }
+//          },
+//         [&](const auto& m) {}
+//     };
+
+//     auto cb = [&](const ItchMessage& msg) {
+//         std::visit(handler_dispatch, msg);
+//     };
+
+//     ItchParser parser{cb};
+//     parser.parse_file();
+//     std::cout << "Count: " << count << "\n";
+//     std::cout << "Bid: " << book.best_bid() << "\nAsk: " << book.best_ask() << "\n";
+// }
+
 void benchmark_itch() {
     OrderBook book{};
-    size_t count{0};
-    std::uint16_t aapl_locate{};    // Big endian!
-
-    auto handler_dispatch = overloaded{
-        [&](const Messages::R_StockDirectory& m) {
-            auto s = trim_spaces(m.stock, 8);
-            
-            if (s == "AAPL") {
-                aapl_locate = m.stock_locate;
-            }
-        },
-        [&](const Messages::A_AddOrder& m) { 
-            if (m.stock_locate == aapl_locate) {
-                process_add_order(book, m.order_reference, m.side, m.price, m.shares);
-                ++count;
-            }
-         },
-        [&](const Messages::F_AddOrderMPID& m) { 
-            if (m.stock_locate == aapl_locate) {
-                process_add_order(book, m.order_reference, m.side, m.price, m.shares);
-                ++count;
-            }
-         },
-        [&](const auto& m) {}
-    };
-
-    auto cb = [&](const ItchMessage& msg) {
-        std::visit(handler_dispatch, msg);
-    };
-
-    ItchParser parser{cb};
-    parser.parse_file();
-    std::cout << "Count: " << count << "\n";
-    std::cout << "Bid: " << book.best_bid() << "\nAsk: " << book.best_ask() << "\n";
+    OrderBookMessageHandler messageHandler{book};
 }
 
 int main() {

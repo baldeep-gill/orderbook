@@ -11,8 +11,6 @@ class OrderBookMessageHandler : public MessageHandler {
         std::string trim_spaces(const char* s, size_t size);
         void add_order(std::uint64_t id, char side, std::uint32_t price, std::uint32_t qty);
         
-    public:
-        OrderBookMessageHandler(OrderBook& book) : book_{book}, stock_locates_{} {};
         
         void process_message(const Messages::R_StockDirectory&);
         void process_message(const Messages::A_AddOrder&);
@@ -22,4 +20,7 @@ class OrderBookMessageHandler : public MessageHandler {
         void process_message(const Messages::X_OrderCancel&);
         void process_message(const Messages::D_OrderDelete&);
         void process_message(const Messages::U_OrderReplace&);
+    
+    public:
+        OrderBookMessageHandler(OrderBook& book) : book_{book}, stock_locates_{} {};
 };
