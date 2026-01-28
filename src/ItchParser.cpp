@@ -1,6 +1,7 @@
 #include "itch_parser/ItchParser.hpp"
 
-void ItchParser::parse_file() {
+template<typename Handler>
+void ItchParser<Handler>::parse_file() {
     std::ifstream file("../data/S071321-v50.bin", std::ios::binary);
 
     std::uint16_t message_size;
@@ -24,7 +25,13 @@ void ItchParser::parse_file() {
     }
 }
 
-ItchMessage ItchParser::parse_message(char* buffer, size_t size, char message_type) {
+template<typename Handler>
+const Handler& ItchParser<Handler>::get_handler() const {
+    return message_handler_.get();
+}
+
+template<typename Handler>
+ItchMessage ItchParser<Handler>::parse_message(char* buffer, size_t size, char message_type) {
     switch (message_type) {
         case 'S': {
             Messages::S_SystemEvent msg;
