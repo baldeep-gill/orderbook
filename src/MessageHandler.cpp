@@ -1,5 +1,9 @@
 #include "message_handler/OrderBookMessageHandler.hpp"
 
+const std::string& OrderBookMessageHandler::get_stock(std::uint16_t locate) {
+    return stock_locates_.at(locate);
+}
+
 std::string OrderBookMessageHandler::trim_spaces(const char* s, size_t size) {
     std::string result(s, size);
     for (size_t i = 0; i < size; ++i) {
