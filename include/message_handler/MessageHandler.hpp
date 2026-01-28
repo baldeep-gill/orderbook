@@ -6,6 +6,10 @@
 
 class MessageHandler {
     public:
+        std::uint64_t bswap64(std::uint64_t n) { return __builtin_bswap64(n); }
+        std::uint32_t bswap32(std::uint32_t n) { return __builtin_bswap32(n); }
+        std::uint16_t bswap16(std::uint16_t n) { return __builtin_bswap16(n); }
+
         virtual ~MessageHandler() = default;
 
         virtual void process_message(const Messages::S_SystemEvent&) {}
