@@ -12,14 +12,15 @@
 
 using MessageCallback = std::function<void(const ItchMessage&)>;
 
+template<typename Handler>
 class ItchParser {
     public:
-        ItchParser(std::unique_ptr<MessageHandler> handle) : message_handler_{std::move(handle)} {};
+        ItchParser(std::unique_ptr<Handler> handle) : message_handler_{std::move(handle)} {};
 
         void parse_file();
+        const Handler& get_handler() const;
 
     private:
-        std::unique_ptr<MessageHandler> message_handler_;
-
+        std::unique_ptr<Handler> message_handler_;
         ItchMessage parse_message(char* buffer, size_t size, char message_type);
 };
