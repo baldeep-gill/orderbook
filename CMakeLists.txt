@@ -25,5 +25,6 @@ target_compile_features(message_handler PUBLIC cxx_std_20)
 add_executable(orderbook_app main.cpp)
 target_link_libraries(orderbook_app PRIVATE orderbook)
 target_link_libraries(orderbook_app PRIVATE itch_parser)
+target_link_libraries(orderbook_app PRIVATE message_handler)
 
 add_subdirectory(tests)
