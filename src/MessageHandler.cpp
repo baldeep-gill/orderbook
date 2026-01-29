@@ -1,13 +1,22 @@
+#include <iostream>
+
 #include "message_handler/OrderBookMessageHandler.hpp"
 
-const std::string& OrderBookMessageHandler::get_stock(std::uint16_t locate) {
-    return stock_locates_.at(locate);
+const std::string OrderBookMessageHandler::get_stock(std::uint16_t locate) const {
+    if (stock_locates_.contains(locate)) return stock_locates_.at(locate);
+    else return "error";
+}
+
+void OrderBookMessageHandler::print_counts() const {
+    for (const auto& [locate, count]: stock_count_) {
+        std::cout << get_stock(locate) << ": " << count << "\n"; 
+    }
 }
 
 std::string OrderBookMessageHandler::trim_spaces(const char* s, size_t size) {
     std::string result(s, size);
     for (size_t i = 0; i < size; ++i) {
-        if (s[i] == ' ') result.resize(i);
+        if (s[i] == ' ') result = result.substr(0, i);
     }
 
     return result;
