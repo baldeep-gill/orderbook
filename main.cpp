@@ -101,27 +101,27 @@ void parse_binance() {
     std::cout << "Bid: " << book.best_bid() << "\nAsk: " << book.best_ask() << "\n";
 }
 
-template<class... Ts>
-struct overloaded : Ts... { 
-    using Ts::operator()...; 
-};
+// template<class... Ts>
+// struct overloaded : Ts... { 
+//     using Ts::operator()...; 
+// };
 
-void process_add_order(OrderBook& book, std::uint64_t order_ref, char side, std::uint32_t price, std::uint32_t qty) {
-    book.add_order(
-        swapEndian64(order_ref),
-        static_cast<Side>(side == 'S'),
-        swapEndian32(price) / 10'000.0,
-        swapEndian32(qty)
-    );
-}
+// void process_add_order(OrderBook& book, std::uint64_t order_ref, char side, std::uint32_t price, std::uint32_t qty) {
+//     book.add_order(
+//         swapEndian64(order_ref),
+//         static_cast<Side>(side == 'S'),
+//         swapEndian32(price) / 10'000.0,
+//         swapEndian32(qty)
+//     );
+// }
 
-std::string_view trim_spaces(std::string_view s, size_t size) {
-    for (size_t i = 0; i < size; ++i) {
-        if (s.at(i) == ' ') return s.substr(0, i);
-    }
+// std::string_view trim_spaces(std::string_view s, size_t size) {
+//     for (size_t i = 0; i < size; ++i) {
+//         if (s.at(i) == ' ') return s.substr(0, i);
+//     }
 
-    return s;
-}
+//     return s;
+// }
 
 // void benchmark_itch() {
 //     OrderBook book{};
@@ -163,7 +163,14 @@ std::string_view trim_spaces(std::string_view s, size_t size) {
 
 void benchmark_itch() {
     OrderBook book{};
-    OrderBookMessageHandler messageHandler{book};
+
+    ItchParser<OrderBookMessageHandler> parser{std::make_unique<OrderBookMessageHandler>(book, 7073)};
+    parser.parse_file();
+
+    const OrderBookMessageHandler& handler = parser.get_handler();
+    // handler.print_counts();
+
+    std::cout << "Bid: " << book.best_bid() << "\nAsk: " << book.best_ask() << "\n";
 }
 
 int main() {

@@ -5,10 +5,13 @@
 
 class OrderBookMessageHandler : public MessageHandler {
     public:
-        OrderBookMessageHandler(OrderBook& book) : book_{book}, stock_locates_{} {};
+        explicit OrderBookMessageHandler(OrderBook& book, std::uint16_t locate) : book_{book}, stock_locates_{} {
+            locate_ = locate;
+        };
         ~OrderBookMessageHandler() = default;
     
-        const std::string& get_stock(std::uint16_t locate); 
+        const std::string get_stock(std::uint16_t locate) const;
+        void print_counts() const;
 
     private:
         OrderBook& book_;

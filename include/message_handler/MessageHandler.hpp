@@ -14,13 +14,16 @@ class MessageHandler {
         
         void handle_message(const ItchMessage& msg) {
             std::visit([&](auto&& m){ 
-                stock_count_[bswap16(m.stock_locate)] += 1;
+                if (bswap16(m.stock_locate) != locate_) return;
+
+                // stock_count_[bswap16(m.stock_locate)] += 1;
                 process_message(m); 
             }, msg);
         };
         
-    private:
-        std::unordered_map<uint16_t, std::size_t> stock_count_;
+    protected:
+        std::uint16_t locate_{};
+        std::unordered_map<uint16_t, std::size_t> stock_count_{};
         
         virtual void process_message(const Messages::S_SystemEvent&) {}
         virtual void process_message(const Messages::R_StockDirectory&) {}
