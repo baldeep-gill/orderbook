@@ -8,7 +8,9 @@ void TestMessageHandler::handle_message(const ItchMessage& msg) {
     std::visit([&](auto&& m){ 
         stock_count_[bswap16(m.stock_locate)] += 1;
 
-        MessageHandler::handle_message(m);
+        if constexpr (requires { process_message(m); }) process_message(m);
+        else MessageHandler::process_message(m);
+        
     }, msg);
 }
 

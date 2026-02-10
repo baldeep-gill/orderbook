@@ -3,10 +3,12 @@
 #include "message_handler/OrderBookMessageHandler.hpp"
 
 void OrderBookMessageHandler::handle_message(const ItchMessage& msg) {
-    std::visit([&](auto&& m){ 
+    std::visit([this](auto&& m){ 
         if (bswap16(m.stock_locate) != locate_) return;
 
-        MessageHandler::process_message(m); 
+        if constexpr (requires { process_message(m); }) process_message(m);
+        else MessageHandler::process_message(m);
+
     }, msg);
 }
 

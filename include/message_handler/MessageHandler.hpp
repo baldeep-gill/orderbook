@@ -32,7 +32,6 @@ class MessageHandler {
         }
         
     protected:
-        std::uint16_t locate_{};
         std::unordered_map<uint16_t, std::size_t> stock_count_{};
         std::unordered_map<std::uint16_t, std::string> stock_locates_{};
         
