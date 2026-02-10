@@ -2,15 +2,10 @@
 
 #include <arpa/inet.h>
 #include <algorithm>
-#include <chrono>
+#include <memory>
 #include <fstream>
-#include <functional>
 
 #include "Messages.hpp"
-#include "orderbook/OrderBook.hpp"
-#include "message_handler/MessageHandler.hpp"
-
-using MessageCallback = std::function<void(const ItchMessage&)>;
 
 template<typename Handler>
 class ItchParser {

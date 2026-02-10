@@ -2,9 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <string_view>
 #include <vector>
-#include <filesystem>
 
 #define swapEndian16(x) __builtin_bswap16(x)
 #define swapEndian32(x) __builtin_bswap32(x)

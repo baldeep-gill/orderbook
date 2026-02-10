@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <list>
 
 using OrderId = std::uint64_t;
 using Price = double;
