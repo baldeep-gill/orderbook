@@ -6,9 +6,7 @@
 
 class TestMessageHandler : public MessageHandler {
     public:
-        explicit TestMessageHandler() {
-            collect_debug_ = true;
-        };
+        explicit TestMessageHandler() {};
         ~TestMessageHandler() = default;
 
         void handle_message(const ItchMessage&);
