@@ -1,6 +1,8 @@
+#include "message_handler/TestMessageHandler.hpp"
 #include <chrono>
 #include <iostream>
 #include <fstream>
+#include <memory>
 #include <sstream>
 #include <vector>
 
@@ -102,15 +104,24 @@ void parse_binance() {
 void benchmark_itch() {
     OrderBook book{};
 
-    // TQQQ: 5846895
-    // TQQQ is the ticker with the most messages related to it
-    ItchParser<OrderBookMessageHandler> parser{std::make_unique<OrderBookMessageHandler>(book, 9759)};
+    // TQQQ(9759): 5846895 messages
+    // NVDA(7073): ~500k messages
+    ItchParser<OrderBookMessageHandler> parser{std::make_unique<OrderBookMessageHandler>(book, 7073)};
     parser.parse_file();
 
-    const OrderBookMessageHandler& handler = parser.get_handler();
+    // const OrderBookMessageHandler& handler = parser.get_handler();
     // handler.print_counts();
 
     std::cout << "Bid: " << book.best_bid() << "\nAsk: " << book.best_ask() << "\n";
+}
+
+void test_message_handler() {
+    ItchParser<TestMessageHandler> parser{std::make_unique<TestMessageHandler>()};
+    parser.parse_file();
+
+    const TestMessageHandler& handler = parser.get_handler();
+
+    std::cout << handler.get_locate("NVDA") << std::endl;
 }
 
 int main() {
@@ -121,7 +132,9 @@ int main() {
     
     // add_loop();
 
-    benchmark_itch();
+    // benchmark_itch();
+
+    test_message_handler();
 
     return 0;
 }

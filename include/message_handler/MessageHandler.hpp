@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <unordered_map>
 
 #include "itch_parser/Messages.hpp"
@@ -11,24 +12,36 @@ class MessageHandler {
         std::uint64_t bswap64(std::uint64_t n) { return __builtin_bswap64(n); }
         std::uint32_t bswap32(std::uint32_t n) { return __builtin_bswap32(n); }
         std::uint16_t bswap16(std::uint16_t n) { return __builtin_bswap16(n); }
-        
-        void handle_message(const ItchMessage& msg) {
-            std::visit([&](auto&& m){ 
-                // const auto& locate = bswap16(m.stock_locate);
-                // stock_count_[locate] += 1;
-                
-                if (bswap16(m.stock_locate) != locate_) return;
 
-                process_message(m); 
-            }, msg);
-        };
+        static std::string trim_spaces(const char* s, size_t size) {
+            std::string result(s, size);
+            for (size_t i = 0; i < size; ++i) {
+                if (s[i] == ' ') result = result.substr(0, i);
+            }
+
+            return result;
+        }
+
+        const std::string get_stock(std::uint16_t locate) const {
+            if (stock_locates_.contains(locate)) return stock_locates_.at(locate);
+            else return "NULL";
+        }
+
+        void handle_message(const ItchMessage& msg) {
+            std::visit([&](auto&& m){ process_message(m); }, msg);
+        }
         
     protected:
+        bool collect_debug_{false};
         std::uint16_t locate_{};
         std::unordered_map<uint16_t, std::size_t> stock_count_{};
+        std::unordered_map<std::uint16_t, std::string> stock_locates_{};
         
         virtual void process_message(const Messages::S_SystemEvent&) {}
-        virtual void process_message(const Messages::R_StockDirectory&) {}
+        virtual void process_message(const Messages::R_StockDirectory& msg) {
+            std::string ticker = trim_spaces(msg.stock, 8);
+            stock_locates_[bswap16(msg.stock_locate)] = ticker;
+        }
         virtual void process_message(const Messages::H_StockTradingAction&) {}
         virtual void process_message(const Messages::Y_RegSHOShortPriceTestRestricted&) {}
         virtual void process_message(const Messages::L_MarketParticipantPositon&) {}
