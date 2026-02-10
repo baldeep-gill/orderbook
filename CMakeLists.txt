@@ -17,13 +17,13 @@ target_compile_features(orderbook PUBLIC cxx_std_20)
 add_library(itch_parser INTERFACE)
 target_include_directories(itch_parser INTERFACE include/itch_parser)
 
-add_library(message_handler src/MessageHandler.cpp)
-target_include_directories(message_handler PUBLIC include)
-target_compile_features(message_handler PUBLIC cxx_std_20)
+add_library(orderbook_message_handler src/OrderBookMessageHandler.cpp)
+target_include_directories(orderbook_message_handler PUBLIC include)
+target_compile_features(orderbook_message_handler PUBLIC cxx_std_20)
 
 add_executable(orderbook_app main.cpp)
 target_link_libraries(orderbook_app PRIVATE orderbook)
 target_link_libraries(orderbook_app PRIVATE itch_parser)
-target_link_libraries(orderbook_app PRIVATE message_handler)
+target_link_libraries(orderbook_app PRIVATE orderbook_message_handler)
 
 add_subdirectory(tests)

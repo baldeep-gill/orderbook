@@ -14,9 +14,11 @@ class MessageHandler {
         
         void handle_message(const ItchMessage& msg) {
             std::visit([&](auto&& m){ 
+                // const auto& locate = bswap16(m.stock_locate);
+                // stock_count_[locate] += 1;
+                
                 if (bswap16(m.stock_locate) != locate_) return;
 
-                // stock_count_[bswap16(m.stock_locate)] += 1;
                 process_message(m); 
             }, msg);
         };

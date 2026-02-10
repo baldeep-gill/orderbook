@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <iostream>
 
 #include "message_handler/OrderBookMessageHandler.hpp"
@@ -8,7 +9,12 @@ const std::string OrderBookMessageHandler::get_stock(std::uint16_t locate) const
 }
 
 void OrderBookMessageHandler::print_counts() const {
-    for (const auto& [locate, count]: stock_count_) {
+    std::vector<std::pair<std::uint16_t, std::size_t>> values(stock_count_.begin(), stock_count_.end());
+    std::sort(values.begin(), values.end(), [](const auto& a, const auto& b) {
+        return a.second > b.second;
+    });
+
+    for (const auto& [locate, count]: values) {
         std::cout << get_stock(locate) << ": " << count << "\n"; 
     }
 }

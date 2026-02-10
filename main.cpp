@@ -162,7 +162,9 @@ void parse_binance() {
 void benchmark_itch() {
     OrderBook book{};
 
-    ItchParser<OrderBookMessageHandler> parser{std::make_unique<OrderBookMessageHandler>(book, 7073)};
+    // TQQQ: 5846895
+    // TQQQ is the ticker with the most messages related to it
+    ItchParser<OrderBookMessageHandler> parser{std::make_unique<OrderBookMessageHandler>(book, 9759)};
     parser.parse_file();
 
     const OrderBookMessageHandler& handler = parser.get_handler();
