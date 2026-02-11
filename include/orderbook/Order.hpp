@@ -4,7 +4,7 @@
 
 using OrderId = std::uint64_t;
 using Price = double;
-using Quantity = std::uint64_t;
+using Quantity = std::int64_t;
 
 enum class Side { Buy, Sell };
 

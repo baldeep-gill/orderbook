@@ -18,7 +18,7 @@ std::vector<Command> generate_work(size_t n_adds, size_t n_cancels) {
 
     std::mt19937_64 rng{1738};
     std::uniform_real_distribution<double> price_distribution{99.0, 101.0};
-    std::uniform_int_distribution<std::uint64_t> qty_distribution{1, 1000};
+    std::uniform_int_distribution<std::int64_t> qty_distribution{1, 1000};
 
     for (size_t i = 0; i < n_adds; ++i) {
         Command c{

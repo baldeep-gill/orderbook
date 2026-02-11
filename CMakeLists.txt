@@ -19,6 +19,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
+set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "" FORCE)
+
 FetchContent_Declare(
     googlebenchmark
     GIT_REPOSITORY  https://github.com/google/benchmark.git
