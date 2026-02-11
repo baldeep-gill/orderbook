@@ -4,11 +4,27 @@ project(OrderBook VERSION 0.1)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -O0 -Wall -Wextra")
-
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -fsanitize=address -fsanitize=undefined")
+set(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -O0 -Wall -Wextra -fsanitize=address -fsanitize=undefined")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -O3")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 
 enable_testing()
+
+include(FetchContent)
+
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG v1.17.0
+)
+FetchContent_MakeAvailable(googletest)
+
+FetchContent_Declare(
+    googlebenchmark
+    GIT_REPOSITORY  https://github.com/google/benchmark.git
+    GIT_TAG         v1.9.5
+)
+FetchContent_MakeAvailable(googlebenchmark)
 
 add_library(orderbook src/OrderBook.cpp)
 target_include_directories(orderbook PUBLIC include)
@@ -32,3 +48,4 @@ target_link_libraries(orderbook_app PRIVATE orderbook_message_handler)
 target_link_libraries(orderbook_app PRIVATE test_message_handler)
 
 add_subdirectory(tests)
+add_subdirectory(bench)
