@@ -108,6 +108,7 @@ static void BM_OrderBook_MarketSweep(benchmark::State& state)
 }
 
 BENCHMARK(BM_OrderBook_BenchMatches)
+    ->Args({5'000'000, 3})
     ->Args({2'000'000, 4})
     ->Args({1'000'000, 3})
     ->Complexity()

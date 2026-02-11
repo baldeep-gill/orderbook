@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -O0 -Wall -Wextra -fsanitize=address -fsanitize=undefined")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -O3")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE "-march=native -O3 -DNDEBUG")
 
 enable_testing()
 

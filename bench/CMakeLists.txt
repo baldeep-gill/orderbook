@@ -3,6 +3,7 @@ add_executable(
     bench_orderbook.cpp
     bench_itchparser.cpp
     bench_orderpool.cpp
+    bench_matching.cpp
 )
 
 target_link_libraries(bench_all PRIVATE
