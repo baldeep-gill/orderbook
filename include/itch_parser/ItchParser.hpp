@@ -12,6 +12,7 @@
 #include "Messages.hpp"
 
 template<typename Handler>
+requires requires (Handler h, ItchMessage& msg) { h.handle_message(msg); }
 class ItchParser {
     public:
         explicit ItchParser(std::unique_ptr<Handler> handle) : message_handler_{std::move(handle)} {};
