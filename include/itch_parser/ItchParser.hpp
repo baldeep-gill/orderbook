@@ -16,7 +16,6 @@ class ItchParser {
             std::ifstream file("../data/S071321-v50.bin", std::ios::binary);
 
             std::uint16_t message_size;
-            size_t count{0};
 
             while (file.read(reinterpret_cast<char*>(&message_size), 2)) {
                 message_size = ntohs(message_size);
@@ -31,14 +30,12 @@ class ItchParser {
 
                 ItchMessage msg = parse_message(buffer, message_size, message_type);
                 message_handler_->handle_message(msg);
-                
-                ++count;
             }
         }
 
         const Handler& get_handler() const { return *message_handler_; }
 
-    private:
+    protected:
         std::unique_ptr<Handler> message_handler_;
 
         ItchMessage parse_message(char* buffer, size_t size, char message_type) {

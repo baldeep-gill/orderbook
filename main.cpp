@@ -106,7 +106,7 @@ void benchmark_itch() {
 
     // TQQQ(9759): 5846895 messages
     // NVDA(7073): ~500k messages
-    ItchParser<OrderBookMessageHandler> parser{std::make_unique<OrderBookMessageHandler>(book, 9759)};
+    ItchParser<OrderBookMessageHandler> parser{std::make_unique<OrderBookMessageHandler>(book, 7073)};
     parser.parse_file();
 
     // const OrderBookMessageHandler& handler = parser.get_handler();
@@ -132,9 +132,13 @@ int main() {
     
     // add_loop();
 
-    benchmark_itch();
+    // benchmark_itch();
 
     // test_message_handler();
+
+    Order o{nullptr, nullptr, 0, Side::Sell, 150.0, 50, 0, 0};
+
+    std::cout << sizeof(o) << "\n";
 
     return 0;
 }
