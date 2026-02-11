@@ -1,6 +1,8 @@
 #include <chrono>
+#include <limits>
 
 #include "orderbook/OrderBook.hpp"
+#include "orderbook/Order.hpp"
 
 ResultCode OrderBook::add_order(OrderId id, Side side, Price price, Quantity quantity) {
     if (order_lookup_.contains(id)) return ResultCode::Add_Fail;
@@ -67,36 +69,13 @@ ResultCode OrderBook::replace_order(OrderId oldID, OrderId newID, Price price, Q
 }
 
 ResultCode OrderBook::market_order(Side side, Quantity quantity) {
-    Quantity filled = 0;
+    Quantity filled;
 
-    if (side == Side::Buy) {
+    // Price outcomes[] = {std::numeric_limits<Price>::min(), std::numeric_limits<Price>::max()};  
+    // filled = match(side, outcomes[side == Side::Buy], quantity);
 
-        auto it = asks_.begin();
-        while (it != asks_.end() && quantity > 0) {
-            auto& level = it->second;
-
-            Quantity level_filled = level.match(quantity, orderpool_);
-            filled += level_filled;
-            quantity -= level_filled;
-
-            if (level.empty()) { it = asks_.erase(it); }
-            else { ++it; }
-        }
-
-    } else { // Side::Sell
-
-        auto it = bids_.begin();
-        while (it != bids_.end() && quantity > 0) {
-            auto& level = it->second;
-
-            Quantity level_filled = level.match(quantity, orderpool_);
-            filled += level_filled;
-            quantity -= level_filled;
-
-            if (level.empty()) { it = bids_.erase(it); }
-            else { ++it; }
-        }
-    }
+    if (side == Side::Buy) filled = match(side, std::numeric_limits<Price>::max(), quantity);
+    else filled = match(side, std::numeric_limits<Price>::min(), quantity);
 
     Quantity remaining = quantity - filled;
 

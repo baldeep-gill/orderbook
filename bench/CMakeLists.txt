@@ -55,3 +55,22 @@ target_link_libraries(bench_orderbook PRIVATE
 target_include_directories(bench_orderbook PRIVATE ../include)
 
 target_compile_features(bench_orderbook PUBLIC cxx_std_20)
+
+##################################################################
+
+add_executable(
+    bench_matching
+    bench_matching.cpp
+)
+
+target_link_libraries(bench_matching PRIVATE 
+    orderbook
+    itch_parser
+    orderbook_message_handler
+    benchmark::benchmark
+    benchmark::benchmark_main
+)
+
+target_include_directories(bench_matching PRIVATE ../include)
+
+target_compile_features(bench_matching PUBLIC cxx_std_20)
