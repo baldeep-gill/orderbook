@@ -125,8 +125,8 @@ void test_message_handler() {
 }
 
 int main() {
-    // calculate_add_percentiles();
-    // calculate_add_throughput();
+    calculate_add_percentiles();
+    calculate_add_throughput();
 
     // parse_binance();
     

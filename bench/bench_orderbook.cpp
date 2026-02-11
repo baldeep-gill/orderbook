@@ -1,3 +1,4 @@
+#include <chrono>
 #include <random>
 #include <vector>
 
@@ -69,9 +70,44 @@ static void BM_OrderBook_AddAndCancel(benchmark::State& state) {
     state.SetLabel("adds-and-cancels");
 }
 
+static void BM_AddLatency(benchmark::State& state) {
+    size_t size = 1e6;
+    OrderBook book{};
+
+    std::vector<long long> latencies;
+    latencies.reserve(size);
+
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(book);
+        benchmark::DoNotOptimize(latencies);
+
+        for (int i = 0; i < size; ++i) {
+            auto start = std::chrono::steady_clock::now();
+
+            book.add_order(i, Side::Buy, 100.0, 1);
+
+            auto end = std::chrono::steady_clock::now();
+            auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+            latencies.push_back(time);
+        }
+    }
+
+    if (state.iterations() == state.max_iterations) {
+
+        std::sort(latencies.begin(), latencies.end());
+
+        state.counters["p50"] = latencies[size * 0.50];
+        state.counters["p95"] = latencies[size * 0.95];
+        state.counters["p99"] = latencies[size * 0.99];
+        state.counters["p99.999"] = latencies[size * 0.99999];
+    }
+}
+
 BENCHMARK(BM_OrderBook_AddAndCancel)
     ->Unit(benchmark::kMillisecond)
     ->Ranges({ {50'000, 100'000}, {250'000, 500'000} })
     ->Apply([](::benchmark::Benchmark* b) {
         b->Complexity(benchmark::oN);
     });
+
+BENCHMARK(BM_AddLatency)->Unit(benchmark::kMillisecond);

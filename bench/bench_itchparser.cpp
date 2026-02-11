@@ -66,7 +66,7 @@ class BenchItchParser : ItchParser<NullHandler> {
 
 
 
-static void BM_ItchParser_ParseFile(benchmark::State& state) {
+static void BM_ItchParser_MemoryFileParse(benchmark::State& state) {
     std::string filename = "../data/S071321-v50.bin";
     BenchItchParser parser{};
 
@@ -91,4 +91,4 @@ static void BM_ItchParser_FileStream(benchmark::State& state) {
 }
 
 BENCHMARK(BM_ItchParser_FileStream)->Unit(benchmark::kMillisecond);
-BENCHMARK(BM_ItchParser_ParseFile)->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_ItchParser_MemoryFileParse)->Unit(benchmark::kMillisecond);
