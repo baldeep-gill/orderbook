@@ -2,8 +2,12 @@
 
 #include <arpa/inet.h>
 #include <algorithm>
+#include <fcntl.h>
 #include <memory>
 #include <fstream>
+#include <netinet/in.h>
+#include <sys/mman.h>
+#include <unistd.h>
 
 #include "Messages.hpp"
 
@@ -31,6 +35,32 @@ class ItchParser {
                 ItchMessage msg = parse_message(buffer, message_size, message_type);
                 message_handler_->handle_message(msg);
             }
+        }
+
+        void mmap_parse() {
+            int fd = open("../data/S071321-v50.bin", O_RDONLY);
+            size_t size = lseek(fd, 0, SEEK_END);
+            lseek(fd, 0, SEEK_SET);
+
+            char* mapped = static_cast<char*>(
+                mmap(nullptr, size, PROT_READ, MAP_PRIVATE, fd, 0)
+            );
+
+            for (size_t offset = 0; offset + 2 <= size; ) {
+                std::uint16_t message_size = ntohs(*reinterpret_cast<const std::uint16_t*>(&mapped[offset]));
+                offset += 2;
+
+                if (offset + message_size > size) break;
+
+                char* msg = &mapped[offset];
+                offset += message_size;
+
+                ItchMessage itch_msg = parse_message(msg, message_size, msg[0]);
+                message_handler_->handle_message(itch_msg);
+            }
+
+            munmap(mapped, size);
+            close(fd);
         }
 
         const Handler& get_handler() const { return *message_handler_; }

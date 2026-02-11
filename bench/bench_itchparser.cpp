@@ -83,7 +83,7 @@ static void BM_ItchParser_FileStream(benchmark::State& state) {
     ItchParser<NullHandler> parser{std::make_unique<NullHandler>()};
     
     for (auto _ : state) {
-        parser.parse_file();
+        parser.mmap_parse();
         benchmark::DoNotOptimize(parser);
     }
     
@@ -91,4 +91,4 @@ static void BM_ItchParser_FileStream(benchmark::State& state) {
 }
 
 BENCHMARK(BM_ItchParser_FileStream)->Unit(benchmark::kMillisecond);
-BENCHMARK(BM_ItchParser_MemoryFileParse)->Unit(benchmark::kMillisecond);
+// BENCHMARK(BM_ItchParser_MemoryFileParse)->Unit(benchmark::kMillisecond);
